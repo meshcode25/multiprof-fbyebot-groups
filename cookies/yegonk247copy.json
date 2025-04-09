@@ -1,0 +1,108 @@
+[
+
+    {
+        "name": "c_user",
+        "value": "100075908227977",
+        "domain": ".facebook.com",
+        "path": "/",
+        "httpOnly": false,
+        "secure": true,
+        "sameSite": "None"
+    
+    },
+
+    {
+        "name": "datr",
+        "value": "ysvtZh5fuEJ0RkWg2quVe56-",
+        "domain":".facebook.com",
+        "path": "/",
+        "httpOnly": true,
+        "secure":true,
+        "SameSite": "None"
+    },
+
+    {
+
+        "name": "xs",
+        "value":  "44%3ACHt3147OC-uQmg%3A2%3A1726860335%3A-1%3A13530%3A%3AAcWLMm8amwgP3sCLQt8ttTmZS0dym1pIsBPKgrT_GKs",
+        "domain":".facebook.com",
+        "path": "/",
+        "httpOnly": true,
+        "secure":true,
+        "SameSite": "None"
+
+    },
+
+    {
+
+        "name": "fr",
+        "value":"1ChGPOXF14YSAHBgd.AWVdY8I0S58zyURkJQLNQVBvx6I.Bm9SVy..AAA.0.0.Bm9SVy.AWUeCUL_AXQ",
+        "domain":".facebook.com",
+        "path": "/", 
+        "httpOnly": true,
+        "secure":true,
+        "SameSite": "None"
+
+    },
+
+    {
+        "name": "presence",
+        "value":    "C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1727343260160%2C%22v%22%3A1%7D",
+        "domain":".facebook.com",
+        "path": "/", 
+        "httpOnly": false,
+        "secure":true,
+        "SameSite": "None"
+
+    },
+    {
+        "name": "ps_l",
+        "value": "1",
+        "domain":".facebook.com",
+        "path": "/", 
+        "httpOnly": true,
+        "secure":true,
+        "SameSite": "Lax"
+    },
+    {
+        "name": "ps_n",
+        "value": "1",
+        "domain":".facebook.com",
+        "path": "/", 
+        "expires": 1755433676,     
+        "httpOnly": true,
+        "secure":true,
+        "SameSite": "None"
+    },
+    {
+        "name": "sb",
+        "value": "ysvtZtfZMLWvn4vv740utmI9",
+        "domain":".facebook.com",
+        "path": "/", 
+        "expires": 1761348776,     
+        "httpOnly": true,
+        "secure":true,
+        "SameSite": "None"
+    },
+    {
+        "name": "dbln",
+        "value": "%7B%22100075908227977%22%3A%2277uHVvnm%22%7D",
+	    "domain":".facebook.com",
+        "path": "/login/device-based", 
+        "expires": 1734564776,     
+        "httpOnly": true,
+        "secure":true,
+        "SameSite": "None"
+    },
+    {
+        "name": "wd",
+        "value":"650x651",
+        "domain":".facebook.com",
+        "path": "/", 
+        "expires": 1727394669,     
+        "httpOnly": false,
+        "secure":true,
+        "SameSite": "Lax"
+    }
+   
+]

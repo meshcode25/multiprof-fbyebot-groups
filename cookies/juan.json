@@ -1,0 +1,92 @@
+[
+	{
+		"name": "c_user",
+		"value": "100080159571377",
+		"domain": ".facebook.com",
+		"path": "/",
+		"expirationDate": 1775476885.906859,
+		"sameSite": "no_restriction",
+		"storeId": "0",
+		"hostOnly": false,
+		"httpOnly": false,
+		"secure": true,
+		"session": false
+	},
+	{
+		"name": "datr",
+		"value": "N3PtZ-DDwrNY7lCIWr56BvTL",
+		"domain": ".facebook.com",
+		"path": "/",
+		"expirationDate": 1778174775.632287,
+		"sameSite": "no_restriction",
+		"storeId": "0",
+		"hostOnly": false,
+		"httpOnly": true,
+		"secure": true,
+		"session": false
+	},
+	{
+		"name": "fr",
+		"value": "1cHJv035SsEHEKBYR.AWdjS7nAuyHsNxWV3oL6ENHhTIKl8rS4fnZm0yt5rxJhuwUeJAI.Bn8m0V..AAA.0.0.Bn8m0V.AWdTI0nxsMYZol0JknikMzlsvL0",
+		"domain": ".facebook.com",
+		"path": "/",
+		"expirationDate": 1751716885.907247,
+		"sameSite": "no_restriction",
+		"storeId": "0",
+		"hostOnly": false,
+		"httpOnly": true,
+		"secure": true,
+		"session": false
+	},
+	{
+		"name": "presence",
+		"value": "C%7B%22t3%22%3A%5B%5D%2C%22utc3%22%3A1743940885355%2C%22v%22%3A1%7D",
+		"domain": ".facebook.com",
+		"path": "/",
+		"sameSite": "no_restriction",
+		"storeId": "0",
+		"hostOnly": false,
+		"httpOnly": false,
+		"secure": true,
+		"session": true
+	},
+	{
+		"name": "sb",
+		"value": "N3PtZ0je_YvydYKw1xvDOcPK",
+		"domain": ".facebook.com",
+		"path": "/",
+		"expirationDate": 1778174810.904491,
+		"sameSite": "no_restriction",
+		"storeId": "0",
+		"hostOnly": false,
+		"httpOnly": true,
+		"secure": true,
+		"session": false
+	},
+	{
+		"name": "wd",
+		"value": "1536x745",
+		"domain": ".facebook.com",
+		"path": "/",
+		"expirationDate": 1744545682,
+		"sameSite": "lax",
+		"storeId": "0",
+		"hostOnly": false,
+		"httpOnly": false,
+		"secure": true,
+		"session": false
+	},
+	{
+		"name": "xs",
+		"value": "48%3AYJ5Pengq7SovjQ%3A2%3A1743614807%3A-1%3A13532%3A%3AAcWUzaSe3vsrnGRGe_83HOJOybFFxgM8bLwLTr4p5A",
+		"domain": ".facebook.com",
+		"path": "/",
+		"expirationDate": 1775476885.907365,
+		"sameSite": "no_restriction",
+		"storeId": "0",
+		"hostOnly": false,
+		"httpOnly": true,
+		"secure": true,
+		"session": false
+	}
+]
