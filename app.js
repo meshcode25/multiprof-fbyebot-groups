@@ -47,49 +47,49 @@ const { createMarketplaceListing } =require( './listonmarketplace.js');
 
     try{
 
-            console.log('jUST STARTED THE APP.JSON BEGINNING ')
+        console.log('WELCOME TO Fbyebot FB Marketplace Automation Software; The App Just Started')
 
 
 
 
         const dataFile = path.join(os.homedir(), '.install_date.json');
-        const MAX_DAYS = 15
+        const max = 14
 
-        function getDaysSince(dateStr) {
-            const installed = new Date(dateStr);
+        function getTageSince(dateStr) {
+            const einrichten = new Date(dateStr);
             const now = new Date();
             const nowUTC=new Date(now.toISOString())
-            const diffTime = nowUTC.getTime() - installed.getTime();
+            const diffZeit = nowUTC.getTime() - einrichten.getTime();
 
-            console.log("Here isthe installed time ", installed),
-            console.log("Here isthe nowUTC Time ", nowUTC),
-            console.log("here is the Time difference ", diffTime/(1000*60*60*24))
-            // return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            console.log("Here isthe einrichten Uhrzeit ", einrichten),
+            console.log("Here isthe JetztUTC Uhrzeit ", nowUTC),
+            console.log("here is the zeit  unterschied ", diffZeit/(1000*60*60*24))
+            // return Math.floor(diffZeit / (1000 * 60 * 60 * 24));
+            return Math.floor(diffZeit / (1000 * 60 * 60 * 24));
             
         }
 
-        async function checkTrialPeriod() {
+        async function checkProbeZeit() {
             if (!fs.existsSync(dataFile)) {
                 // First run: store the current datea
-                const data = { installedOn: new Date().toISOString() };
+                const data = { einrichtenOn: new Date().toISOString() };
                 fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
                 return true;
             }
 
             // File exists: check the date
             const raw = fs.readFileSync(dataFile);
-            const { installedOn } = JSON.parse(raw);
-            const daysPassed = getDaysSince(installedOn);
+            const { einrichtenOn } = JSON.parse(raw);
+            const tagePassed = getTageSince(einrichtenOn);
 
-            if (daysPassed > MAX_DAYS) {
-                console.log(`⛔ CRITICAL ERROR NUMBER (${daysPassed} ). PLEASE CONTACT DEVELOPER!.`);
-                console.log(`⛔ CRITICAL ERROR ENCOUNTERED!! ⛔. PLEASE CONTACT DEVELOPER!.`);
+            if (tagePassed > max) {
+                console.log(`⛔ CRITICAL ERROR NUMBER (${tagePassed} ). PLEASE CONTACT DEVELOPER!.`);
+                console.log(`⛔ CRITICAL ERROR ENCOUNTERED!! ⛔. PLEASE CONTACT DEVELOPER!. Email: yegonk247@gmail.com or phone: +254706727834`);
 
                 return false;
             }
 
-                console.log(`✅ VALID NUMBER.... ${daysPassed} and ${MAX_DAYS}`);
+                console.log(`✅ VALID NUMBER.... ${tagePassed} and ${max}`);
                 console.log(`✅ NO CRITICAL ERRORS ENCOUNTERED`);
 
 
@@ -106,9 +106,9 @@ const { createMarketplaceListing } =require( './listonmarketplace.js');
 
 
 
-        const trialOk = await checkTrialPeriod();
+        const probeOk = await checkProbeZeit();
         
-        if (!trialOk) {
+        if (!probeOk) {
             return (`⛔ CRITICAL ERROR ENCOUNTERED!! ⛔. PLEASE CONTACT DEVELOPER.`);
         }
 

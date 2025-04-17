@@ -1960,7 +1960,7 @@ async function  createMarketplaceListing(page,browser){
 
                                                 }
                                                 else{
-                                                    console.log("Suggested Groups Are more than 20 so Select Randlomly 20 oof them       +  " +  divbuttons);
+                                                    console.log("Suggested Groups Are more than 20 so Select Randlomly 20 oof them       +   +  divbuttons");
                                                     console.log("Suggested Groups Are more than 20 so Select RRandlomly 20 oof them here is the length     " + divbuttons.length);
 
 
@@ -1974,12 +1974,12 @@ async function  createMarketplaceListing(page,browser){
 
                                                         while(trackrandom.includes(randomnumber)){
                                                             randomnumber=Math.floor(Math.random()*divbuttons.length);
-                                                            console.log("HHere iis the RANNDOM NUMBEER(Dupclicate Number that was causing Repetitons) TO BE USEED + "  + randomnumber);
+                                                            // console.log("HHere iis the RANNDOM NUMBEER(Dupclicate Number that was causing Repetitons) TO BE USEED + "  + randomnumber);
 
                                                         }
 
 
-                                                        console.log("HHere iis the RANNDOM NUMBEER TO BE USEED + "  + randomnumber);
+                                                        // console.log("HHere iis the RANNDOM NUMBEER TO BE USEED + "  + randomnumber);
                                                         
                                                         trackrandom.push(randomnumber)
                                                                                                                 
