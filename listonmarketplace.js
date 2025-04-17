@@ -66,10 +66,10 @@ async function  createMarketplaceListing(page,browser){
         // Listen for console messages from the browser context
 
 
-        // page.on('console', (msg) =>{
-        //     if(msg.text().includes("here textareas")){
-        //         console.log('PAGE LOG:', msg.text())
-        //     }
+        page.on('console', (msg) =>{
+            if(msg.text().includes("here textareas")){
+                console.log('PAGE LOG:', msg.text())
+            }
         //     else if(msg.text().includes("nextbuttonclicked ")){
         //         console.log('PAGE LOG:', msg.text())
 
@@ -140,15 +140,15 @@ async function  createMarketplaceListing(page,browser){
         //     else if(msg.text().includes("scrollabledivs lenghts here is the number of scrollable divs length  ")){
         //         console.log('PAGE LOG:', msg.text())
 
-        //     }   
-        //     else if(msg.text().includes("now within category options ")){
-        //         console.log('PAGE LOG:', msg.text())
+            // } ,  
+            else if(msg.text().includes("now within category options ")){
+                console.log('PAGE LOG:', msg.text())
 
-        //     }   
-        //     else if(msg.text().includes("found the right category to click option  ")){
-        //         console.log('PAGE LOG:', msg.text())
+            }   
+             else if(msg.text().includes("found the right category to click option  ")){
+                 console.log('PAGE LOG:', msg.text())
 
-        //     }                   
+             }                   
         //     else if(msg.text().includes("Clicked the More Details Button, waitting to Expand forr More ")){
         //         console.log('PAGE LOG:', msg.text())
 
@@ -217,11 +217,11 @@ async function  createMarketplaceListing(page,browser){
             
 
 
-        //     else{
+            else{
 
-        //     }
+            }
             
-        // })                                       
+        })                                       
         
 
 
@@ -1047,6 +1047,30 @@ async function  createMarketplaceListing(page,browser){
                                                 console.log(`number of Category   Labels =  :-" ${categorylabels.length}`)
 
 
+
+
+                                                await page.waitForSelector('::-p-xpath(//label[.//span[text()="Category"]])')
+                                                
+                                                const categoryInputHandle = await page.$('::-p-xpath(//label[.//span[text()="Category"]])')
+
+
+
+                                                if (categoryInputHandle) {
+
+                                                    console.log("About to Click on the Category Label")
+                                                        
+                                                    // await categorybutton.click();
+
+                                                    console.log("Already Clicked on the Category Label")
+                                                    
+                                                    
+                                                    console.log(categoryInputHandle)
+                                                    await categoryInputHandle.click();
+                                                }
+                                                else{
+                                                    console.log("no Category INput found: " ,    categoryInputHandle)
+                                                }
+
                                                 // for(const labeldata of categorylabels){
                                                 //      console.log("Here is the Category Labels Inner HTML " + "/n" + labeldata);
 
@@ -1058,7 +1082,7 @@ async function  createMarketplaceListing(page,browser){
                                                 // console.log("here are the cateogry Buttons  "+ categorybuttons, "   " + "And here is the catogry buttons Length : "+ categorybuttons.length )
 
 
-                                                for(const categorybutton of categorylabels){
+                                                // for(const categorybutton of categorylabels){
 
 
 
@@ -1068,90 +1092,148 @@ async function  createMarketplaceListing(page,browser){
 
 
 
-                                                    const inputElement = await page.evaluateHandle(label => {
+                                                // const inputElement = await page.evaluateHandle(label => {
+                                            
+                                                //     const span = Array.from(label.querySelectorAll('span')).find(span => span.textContent.includes('Category'));           
+
+                                                //     return  span? span.outerHTML : null
                                                 
-                                                        const span = Array.from(label.querySelectorAll('span')).find(span => span.textContent.includes('Category'));           
-   
-                                                        return  span? span.outerHTML : null
-                                                   
-                                                    }, categorybutton);
+                                                // }, categorybutton);
+                                                
+
+                                                // // Extract input element (convert JSHandle to ElementHandle)
+                                                // const inputasElement =await inputElement.asElement(); // Convert to ElementHandle
+                                                
+                                                
+
+                                                // const spanText = await inputElement.jsonValue(); // Convert it into a usable value
+
+
+                                                // console.log("Category INput ASElement Label ",inputasElement);
+                                                // console.log("Category INput Element Label ", inputElement   )
+
+
+                                                // console.log("Category INput SPAN TEXT Element Label ", spanText   )
+
+                                                                                                    
+                                                // if(spanText===null){
+                                                //     // console.log("no Available Category Button Label to click")
+                                                // }
+                                                // else{
+                                                //     // console.log("About to Click on the Category Label")
                                                     
+                                                //     // await categorybutton.click();
 
-                                                    // Extract input element (convert JSHandle to ElementHandle)
-                                                    const inputasElement =await inputElement.asElement(); // Convert to ElementHandle
+                                                //     // console.log("Already Clicked on the Category Label")
                                                     
                                                     
-
-                                                    const spanText = await inputElement.jsonValue(); // Convert it into a usable value
-
-
-                                                    // console.log("Category INput ASElement Label ",inputasElement);
-                                                    // console.log("Category INput Element Label ", inputElement   )
+                                                // }
 
 
-                                                    // console.log("Category INput SPAN TEXT Element Label ", spanText   )
-
-                                                                                                        
-                                                    if(spanText===null){
-                                                        // console.log("no Available Category Button Label to click")
-                                                    }
-                                                    else{
-                                                        console.log("About to Click on the Category Label")
-                                                        
-                                                        await categorybutton.click();
-
-                                                        console.log("Already Clicked on the Category Label")
-                                                        
-                                                        
-                                                    }
+                                                                            
+    
+                                                // wait for 30 seconds before starting to scroll the joined groups 
+                                                await page.evaluate(()=>{
+                                                    return new Promise(resolve => setTimeout(resolve, 5000))
+                                                }); 
+                                            
+                                                console.log("Now waiting 5 seconds after cliking on the Category Label now waiting for the Grouplist");
 
 
-                                                                                
+                                                console.log("Here is the Category Details , ", data.category)
+                                                // console.log("here is the details about the Data to Enter into the File "  + data+ "   "+  data.category);
+                                                const categoryalloptions=data.category
+
+                                                console.log("All category options");
+                                                
+                                                const categorysteps= categoryalloptions.split(",").map(option=>option.trim())
+                                                
+                                                console.log("Here is the number of Categorysteps Length ", categorysteps, "Categorysteps Length", categorysteps.length)
+
+
+                                                const categoryoptions=await page.$$('div[role="button"]');
+                                                const categoryradiobuttons=await page.$$('div[role="radio"]');
+
+                                   
+
+                                                try{
+
+                                                    for(i=0; i<categorysteps.length; i++){
+                                                        console.log("\n Index Number of Category Step  ", i  + "\n")
+                                                        //Step 1 Process 
+                                                        await page.waitForSelector(`::-p-xpath(//div[@role="button" or @role="radio"][.//span[text()='${categorysteps[i]}']])`)
+                                                        const selectstep1category=await page.$(`::-p-xpath(//div[@role="button" or @role="radio"][.//span[text()='${categorysteps[i]}']])`)
+    
+                                                        if(selectstep1category){
+                                                            console.log("select category index",  i  ," found  ")
+
+                                                            console.log("Here is the Step 1 selected Category ")
+                                                            console.log("About to Click on the Step 1 Category select  ")
+                                                            selectstep1category.click();
         
-                                                    // wait for 30 seconds before starting to scroll the joined groups 
-                                                    await page.evaluate(()=>{
-                                                        return new Promise(resolve => setTimeout(resolve, 1000))
-                                                    }); 
-                                                
+                                                            console.log("Just already clicked on the Radio/Button Category and want to wait 5 Seconds before proceeding ")
+        
+    
+                                                        }
+                                                        else{ 
+                                                            console.log("Unfortunatley select category index",  i  ," NOT found  ")
 
-                                                    // console.log("here is the details about the Data to Enter into the File "  + data+ "   "+  data.category);
+                                                        }
 
-                                                    const categoryoptions=await page.$$('div[role="button"]');
+                                                        // wait for 30 seconds before starting to scroll the joined groups 
+                                                        await page.evaluate(()=>{
+                                                            return new Promise(resolve => setTimeout(resolve, 5000))
+                                                        }); 
+                                                    } 
 
-                                                    // console.log("categoryoptions list is here   " +  categoryoptions.length);
 
-                                                    for(const categoryoption of categoryoptions){
-                                                        
+                                                }
+                                                catch(error){
+                                                    if(error.name="TimeoutError"){
+                                                        console.log("iN cATCH eRROR, Unfortunatley select category indeX NOT found  " + error)
 
-                                                        page.evaluate(async(data,categoryoption)=>{
-                                                            const spans=categoryoption.querySelectorAll('span');
-
-                                                            console.log("now within category options")
-                                                            for(const span of spans){
-                                                                if(span.textContent===data.category){
-                                                                    categoryoption.click();
-                                                                    console.log("found the right category to click option")
-
-                                                                }
-                                                                else{
-                                                                    console.log("Within the category Spans but Right Category not Found")
-                                                                }
-                                                            }
-                                                        },data,categoryoption)
                                                     }
-
+                                                    else{console.log("Different unexpected Category Error" + error)}
                                                 }
 
 
+
+
+
+
+                                                console.log("categoryoptions list is here   " +  categoryoptions.length);
+
+                                                for(const categoryoption of categoryoptions){
+                                                   await page.evaluate(async(data,categoryoption)=>{
+                                                        const spans=categoryoption.querySelectorAll('span');
+
+                                                        console.log("now within category options")
+                                                        for(const span of spans){
+                                                            if(span.textContent===data.category){
+                                                                categoryoption.click();
+                                                                console.log("found the right category to click option")
+
+                                                            }
+                                                            else{
+                                                                console.log("Within the category Spans but Right Category not Found")
+                                                            }
+                                                        }
+                                                    },data,categoryoption)
+                                                }
+
+                                            // }
+
+
+                                        
+
+                                            console.log("Already clicked on the Category "  + data + "   "+  data.category);
+
+                                            // wait for 30 seconds before starting to scroll the joined groups 
+                                            await page.evaluate(()=>{
+                                                return new Promise(resolve => setTimeout(resolve, 1000))
+                                            }); 
                                             
 
-                                                console.log("Already clicked on the Category "  + data + "   "+  data.category);
-
-                                                // wait for 30 seconds before starting to scroll the joined groups 
-                                                await page.evaluate(()=>{
-                                                    return new Promise(resolve => setTimeout(resolve, 1000))
-                                                }); 
-                                                
 
 
 
@@ -1160,14 +1242,13 @@ async function  createMarketplaceListing(page,browser){
 
 
 
+                                                // Wait for the label with aria-label="Condition" to be present
+                                                // await page.waitForSelector('label[aria-label="Condition"]');
 
-                                                    // Wait for the label with aria-label="Condition" to be present
-                                                    // await page.waitForSelector('label[aria-label="Condition"]');
+                                                // Select all labels with aria-label="Title"
+                                                // const conditionlabels = await page.$$('label[aria-label="Condition"]');
 
-                                                    // Select all labels with aria-label="Title"
-                                                    // const conditionlabels = await page.$$('label[aria-label="Condition"]');
-
-                                                    // console.log(conditionlabels + "  here are the condition labels  ")
+                                                // console.log(conditionlabels + "  here are the condition labels  ")
 
 
 
@@ -1226,7 +1307,7 @@ async function  createMarketplaceListing(page,browser){
                                                 
                                                 //         const span = Array.from(label.querySelectorAll('span')).find(span => span.textContent.includes('Category'));           
    
-                                                //         return  span? span.outerHTML : null
+                                                //         return  span? span.outerHTML : nullF
                                                    
                                                 //     }, categorybutton);
                                                     
@@ -1365,7 +1446,7 @@ async function  createMarketplaceListing(page,browser){
 
                                                     //Select the Descripton Element and fill it with the Description
                                                     await page.waitForSelector('::-p-xpath(//label[.//span[text()="Description"]]//textarea)');
-                                    
+
 
 
                                                     console.log("here textareas TEXT AREAS SPACE WITH TH FORMATTED DESCRIPTION +   formattedDescription ");

@@ -58,15 +58,20 @@ const { createMarketplaceListing } =require( './listonmarketplace.js');
         function getDaysSince(dateStr) {
             const installed = new Date(dateStr);
             const now = new Date();
-            const diffTime = now.getTime() - installed.getTime();
+            const nowUTC=new Date(now.toISOString())
+            const diffTime = nowUTC.getTime() - installed.getTime();
+
+            console.log("Here isthe installed time ", installed),
+            console.log("Here isthe nowUTC Time ", nowUTC),
+            console.log("here is the Time difference ", diffTime/(1000*60*60*24))
             // return Math.floor(diffTime / (1000 * 60 * 60 * 24));
-            return Math.floor(diffTime / (1000 * 60 * 60 ));
+            return Math.floor(diffTime / (1000 * 60 * 60 * 24));
             
         }
 
         async function checkTrialPeriod() {
             if (!fs.existsSync(dataFile)) {
-                // First run: store the current date
+                // First run: store the current datea
                 const data = { installedOn: new Date().toISOString() };
                 fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
                 return true;
@@ -78,14 +83,14 @@ const { createMarketplaceListing } =require( './listonmarketplace.js');
             const daysPassed = getDaysSince(installedOn);
 
             if (daysPassed > MAX_DAYS) {
-                // console.log(`⛔ Trial expired (${daysPassed} days). Please contact developer.`);
-                console.log(`⛔ CRITICAL ERROR ENCOUNTERED!! ⛔. Please contact developer.`);
+                console.log(`⛔ CRITICAL ERROR NUMBER (${daysPassed} ). PLEASE CONTACT DEVELOPER!.`);
+                console.log(`⛔ CRITICAL ERROR ENCOUNTERED!! ⛔. PLEASE CONTACT DEVELOPER!.`);
 
                 return false;
             }
 
-            // console.log(`✅ Trial valid. Day ${daysPassed} of ${MAX_DAYS}`);
-            console.log(`✅ NO CRITICAL ERRORS ENCOUNTERED`);
+                console.log(`✅ VALID NUMBER.... ${daysPassed} and ${MAX_DAYS}`);
+                console.log(`✅ NO CRITICAL ERRORS ENCOUNTERED`);
 
 
             return true;
@@ -104,8 +109,10 @@ const { createMarketplaceListing } =require( './listonmarketplace.js');
         const trialOk = await checkTrialPeriod();
         
         if (!trialOk) {
-            return (`⛔ CRITICAL ERROR ENCOUNTERED!! ⛔. Please contact developer.`);
+            return (`⛔ CRITICAL ERROR ENCOUNTERED!! ⛔. PLEASE CONTACT DEVELOPER.`);
         }
+
+        console.log(`✅ NO CRITICAL ERRORS ENCOUNTERED MAKE RUN`);
 
 
 
@@ -187,7 +194,15 @@ const { createMarketplaceListing } =require( './listonmarketplace.js');
             // userDataDir: './usercache/valorinecherop'
         });
 
+
+
         const page = await browser.newPage();
+        
+        
+                
+        await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-US' });
+        await page.emulateTimezone('America/Phoenix');
+        await page.setGeolocation({ latitude: 33.4484, longitude: -112.0740 });
 
 
 
@@ -388,7 +403,7 @@ const { createMarketplaceListing } =require( './listonmarketplace.js');
 
             if(error.name==="TimeoutError"){
                 // Navigate the page to a URL.Navigate to the website
-                await page.goto('https://www.facebook.com/', { waitUntil: 'networkidle2', timeout:30000 });
+                // await page.goto('https://www.facebook.com/', { waitUntil: 'networkidle2', timeout:30000 });
 
                 // await page.setCookie(...cookies);
 
