@@ -13,7 +13,7 @@ async function  createMarketplaceListing(page,browser){
 
     try{
         
-        function getAppDataDir(appName = 'fbyebotfreebee3.0') {
+        function getAppDataDir(appName = 'fbyebot-us-2.0') {
             const home = os.homedir();
 
             if (platform === 'win32') {
@@ -233,12 +233,14 @@ async function  createMarketplaceListing(page,browser){
 
         const rootfolderpath=process.env.root
 
+        console.log("here is the rootfolder path", rootfolderpath);
 
         // Function to read the details from the folder
         const readFolderContents = () => {
             // Get list of all files in the folder
             const files = fs.readdirSync(rootfolderpath);
 
+            console.log("Here is the read folder details" , files)
             // Separate the text file and image files
             const txtFile = files.find(file => file.endsWith('.txt'));
             const imageFiles = files.filter(file => !file.endsWith('.txt'));
@@ -251,7 +253,7 @@ async function  createMarketplaceListing(page,browser){
                 
                 const folderimagePaths=path.join(rootfolderpath,imagepath);
 
-            
+                
                 imagepaths.push(folderimagePaths);
             
             
@@ -263,7 +265,8 @@ async function  createMarketplaceListing(page,browser){
             const txtFilePath = path.join(rootfolderpath, txtFile);
             const fileContent = fs.readFileSync(txtFilePath, 'utf8');
 
-            
+            console.log("here is the txtFilePath " , txtFilePath )
+            console.log("here is the fileContent " , fileContent)
 
 
             // const imagetextContent=imagetextpaths;
@@ -412,7 +415,7 @@ async function  createMarketplaceListing(page,browser){
     
 
 
-                await page.goto("https://web.facebook.com/marketplace/?ref=app_tab", { waitUntil: 'networkidle2', timeout:80000 });
+                await page.goto("https://web.facebook.com/marketplace/?ref=app_tab", { waitUntil: 'load', timeout:80000 });
                 
             
                 await page.evaluate(async()=>{
@@ -428,10 +431,10 @@ async function  createMarketplaceListing(page,browser){
 
                 
 
-                // await page.waitForSelector('::-p-xpath(//a[.//span[text()="Marketplace"]])',{timeout:90000});
+                // await page.waitForSelector('//a[.//span[text()="Marketplace"]]',{timeout:90000});
 
                 // // Wait for the link to be available
-                // const marketplace = await page.$('::-p-xpath(//a[.//span[text()="Marketplace"]])');
+                // const marketplace = await page.$('//a[.//span[text()="Marketplace"]]');
 
                 // await page.goto
 
@@ -457,10 +460,10 @@ async function  createMarketplaceListing(page,browser){
                 // console.log("have waited for 30 seconds before taking the screenshot of create lising page above")
 
 
-                await page.waitForSelector('::-p-xpath(//a[.//span[text()="Create new listing"]])');
+                await page.waitForSelector('//a[.//span[text()="Create new listing"]]');
 
                 // Wait for the link to be available
-                const createnewlistingbutton = await page.$('::-p-xpath(//a[.//span[text()="Create new listing"]])');
+                const createnewlistingbutton = await page.$('//a[.//span[text()="Create new listing"]]');
 
                 await createnewlistingbutton.click();
               
@@ -516,10 +519,10 @@ async function  createMarketplaceListing(page,browser){
 
 
 
-                await page.waitForSelector('::-p-xpath(//a[.//span[text()="Item for sale"]])');
+                await page.waitForSelector('//a[.//span[text()="Item for sale"]]');
 
                 // Wait for the link to be available
-                const itemforsalebutton = await page.$('::-p-xpath(//a[.//span[text()="Item for sale"]])');
+                const itemforsalebutton = await page.$('//a[.//span[text()="Item for sale"]]');
 
                 const itemforsaleElementHandle=itemforsalebutton;
 
@@ -570,9 +573,14 @@ async function  createMarketplaceListing(page,browser){
 
 
                                     // await page.waitForSelector('div[role="button"]');
-                                    await page.waitForFunction(() => {
-                                        return Array.from(document.querySelectorAll('span')).some(span => span.innerHTML.includes('or drag and drop'));
-                                    });
+                                    // await page.waitForFunction(() => {
+                                    //     return Array.from(document.querySelectorAll('span')).some(span => span.innerHTML.includes('or drag and drop'));
+                                    // });
+
+
+                                    await page.locator('span:has-text("or drag and drop")').first().waitFor({ timeout: 120000 });
+
+
 
                                     // await page.waitForFunction(() => {
                                     //     return Array.from(document.querySelectorAll('a')).some(a => 
@@ -581,7 +589,7 @@ async function  createMarketplaceListing(page,browser){
                                     // });
 
                                     // wait for 30 seconds before starting to scroll the joined groups 
-                                    await page.evaluate(async ()=>{return new Promise(resolve => setTimeout(resolve, 1000))}); 
+                                    await page.evaluate(async ()=>{return new Promise(resolve => setTimeout(resolve, 10000))}); 
                                                     
 
                                     await page.screenshot({path:path.join(marketplacelistingimgs, "mkrtplclistingpopup.png"),timeout:60000})
@@ -639,19 +647,22 @@ async function  createMarketplaceListing(page,browser){
                                                 // await page.awaitSelector('')
                 
                                                 // await page.waitForSelector('div[role="button"]');
-                                                await page.waitForFunction(() => {
-                                                    return Array.from(document.querySelectorAll('span')).some(span => span.innerHTML.includes('or drag and drop'));
-                                                });
+                                                // await page.waitForFunction(() => {
+                                                //     return Array.from(document.querySelectorAll('span')).some(span => span.innerHTML.includes('or drag and drop'));
+                                                // });
+
+                                                await page.locator('span:has-text("or drag and drop")').first().waitFor({ timeout: 120000 });
+
 
                                                 await page.waitForSelector('div[role="button"]', {visible: true});
 
 
-                                                // Upload a file using Puppeteer
-                                                const [fileChooser] = await Promise.all([
-                                                    page.waitForFileChooser({timeout:60000}), // Wait for the file chooser to be triggered                                        
-                                                    await button.click(), // Trigger the click to open the file chooser
+                                                // // Upload a file using Puppeteer
+                                                // const [fileChooser] = await Promise.all([
+                                                //     // page.waitForFileChooser({timeout:60000}), // Wait for the file chooser to be triggered                                        
+                                                //     await button.click(), // Trigger the click to open the file chooser
                 
-                                                ]);
+                                                // ]);
                 
 
                                                 
@@ -749,8 +760,20 @@ async function  createMarketplaceListing(page,browser){
                                                 // console.log("Here is the formatted description " + formattedDescription )f
                                                 
                                                 // Upload multiple files (provide the absolute paths to the images)                                            
-                                                await fileChooser.accept(imagespaths);    
                                                 
+                                                // Upload a file using Puppeteer
+                                                // await button.click(), // Trigger the click to open the file chooser
+                                                // console.log("Just clicked the Images Upload buttons")                                                
+                                                
+                                                // await page.setInputFiles('//label/input[type="file" accept="image/*,image/heif,image/heic"', imagespaths);   
+                                                await page.setInputFiles('label input[type="file"][accept="image/*,image/heif,image/heic"]', imagespaths);
+                                                console.log("Just selected the images to upload  and uploaded wait 5 seconds before continue")
+
+                                                
+                                                // // Wait for a specific timeout (e.g., 5000 milliseconds) before taking a screenshot
+                                                await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 5000)));
+
+
                                                 // "/home/y/fbyebot1.0/phones/451780393_122123902634349689_981859647559599175_n.jpg",                                    
                                                 // "/home/y/Bilder /Screenshot from 2024-08-27 23-36-23.png",    
                                                 // "/home/y/fbyebot1.0/phones/451833410_122123902592349689_2546841386593894967_n.jpg",
@@ -1049,9 +1072,9 @@ async function  createMarketplaceListing(page,browser){
 
 
 
-                                                await page.waitForSelector('::-p-xpath(//label[.//span[text()="Category"]])')
+                                                await page.waitForSelector('//label[.//span[text()="Category"]]')
                                                 
-                                                const categoryInputHandle = await page.$('::-p-xpath(//label[.//span[text()="Category"]])')
+                                                const categoryInputHandle = await page.$('//label[.//span[text()="Category"]]')
 
 
 
@@ -1064,11 +1087,11 @@ async function  createMarketplaceListing(page,browser){
                                                     console.log("Already Clicked on the Category Label")
                                                     
                                                     
-                                                    console.log(categoryInputHandle)
+                                                    console.log("categoryInputHandle " )
                                                     await categoryInputHandle.click();
                                                 }
                                                 else{
-                                                    console.log("no Category INput found: " ,    categoryInputHandle)
+                                                    console.log("no Category INput found: " ,   " categoryInputHandle")
                                                 }
 
                                                 // for(const labeldata of categorylabels){
@@ -1161,8 +1184,8 @@ async function  createMarketplaceListing(page,browser){
                                                     for(i=0; i<categorysteps.length; i++){
                                                         console.log("\n Index Number of Category Step  ", i  + "\n")
                                                         //Step 1 Process 
-                                                        await page.waitForSelector(`::-p-xpath(//div[@role="button" or @role="radio"][.//span[text()='${categorysteps[i]}']])`)
-                                                        const selectstep1category=await page.$(`::-p-xpath(//div[@role="button" or @role="radio"][.//span[text()='${categorysteps[i]}']])`)
+                                                        await page.waitForSelector(`//div[@role="button" or @role="radio"][.//span[text()='${categorysteps[i]}']]`)
+                                                        const selectstep1category=await page.$(`//div[@role="button" or @role="radio"][.//span[text()='${categorysteps[i]}']]`)
     
                                                         if(selectstep1category){
                                                             console.log("select category index",  i  ," found  ")
@@ -1204,7 +1227,7 @@ async function  createMarketplaceListing(page,browser){
                                                 console.log("categoryoptions list is here   " +  categoryoptions.length);
 
                                                 for(const categoryoption of categoryoptions){
-                                                   await page.evaluate(async(data,categoryoption)=>{
+                                                   await page.evaluate(async({data,categoryoption})=>{
                                                         const spans=categoryoption.querySelectorAll('span');
 
                                                         console.log("now within category options")
@@ -1218,7 +1241,7 @@ async function  createMarketplaceListing(page,browser){
                                                                 console.log("Within the category Spans but Right Category not Found")
                                                             }
                                                         }
-                                                    },data,categoryoption)
+                                                    },{data,categoryoption})
                                                 }
 
                                             // }
@@ -1407,13 +1430,13 @@ async function  createMarketplaceListing(page,browser){
                                                     // await page.waitForFunction()
                                                     await page.waitForSelector('div[role=option]')
 
-                                                    const options=await page.$$('div[role=option');
+                                                    const options=await page.$$('div[role=option]');
 
                                                     // console.log("here are the options " + options);
 
                                                     for(const option of options){
 
-                                                        await page.evaluateHandle(async(optionhandle,data)=>{
+                                                        await page.evaluateHandle(async({optionhandle,data})=>{
                                                         
                                                             const selectoption= optionhandle.querySelector('span');
 
@@ -1432,7 +1455,7 @@ async function  createMarketplaceListing(page,browser){
                                                             }                                            
                     
 
-                                                        },option,data)
+                                                        },{optionhandle:option,data})
 
                                                         
 
@@ -1445,19 +1468,19 @@ async function  createMarketplaceListing(page,browser){
 
 
                                                     //Select the Descripton Element and fill it with the Description
-                                                    await page.waitForSelector('::-p-xpath(//label[.//span[text()="Description"]]//textarea)');
+                                                    await page.waitForSelector('//label[.//span[text()="Description"]]//textarea');
 
 
 
                                                     console.log("here textareas TEXT AREAS SPACE WITH TH FORMATTED DESCRIPTION +   formattedDescription ");
                                                     
 
-                                                    await page.click('::-p-xpath(//label[.//span[text()="Description"]]//textarea)');
+                                                    await page.click('//label[.//span[text()="Description"]]//textarea');
 
 
                                                     console.log("Already Clicked on the Description text Area")
 
-                                                    await page.type('::-p-xpath(//label[.//span[text()="Description"]]//textarea)', formattedDescription, { delay: 20 });
+                                                    await page.locator('//label[.//span[text()="Description"]]//textarea').type(formattedDescription, {timeout: 300000, delay: 20 });
 
                                                     console.log("Successffully clicked and fillled the Desciption Input text Areas ")
 
@@ -1486,14 +1509,14 @@ async function  createMarketplaceListing(page,browser){
 
 
                                                     //Select the Product Tags Element and fill it with the Product Tags
-                                                    await page.waitForSelector('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)');
+                                                    await page.waitForSelector('//label[.//span[text()="Product tags"]]//div//div//div//textarea');
                                     
 
 
                                                     console.log("here textareas TEXT AREAS SPACE For Product Tags +   formattedDescription ");
                                                     
 
-                                                    await page.click('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)');
+                                                    await page.click('//label[.//span[text()="Product tags"]]//div//div//div//textarea');
 
 
                                                     console.log("Already Clicked on the Product Text Areas text Area")
@@ -1502,7 +1525,7 @@ async function  createMarketplaceListing(page,browser){
 
                                                     for(const productTag of formattedTags){
     
-                                                        await page.type('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)', productTag, { delay: 15 });
+                                                        await page.type('//label[.//span[text()="Product tags"]]//div//div//div//textarea', productTag, { delay: 15 });
     
                                                         await page.keyboard.press('Enter');
 
@@ -1520,7 +1543,7 @@ async function  createMarketplaceListing(page,browser){
 
 
 
-                                                    // await page.type('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)', formattedDescription, { delay: 20 });
+                                                    // await page.type('//label[.//span[text()="Product tags"]]//div//div//div//textarea)', formattedDescription, { delay: 20 });
 
                                                     console.log("Successffully clicked and fillled the Product Tags ARea Input text Areas ")
 
@@ -1768,8 +1791,8 @@ async function  createMarketplaceListing(page,browser){
     
 
                                                         //Wait for the publish button to be available
-                                                        const publishButton = await page.$('::-p-xpath(//div[.//span[text()="Publish"]])');
-                                                        const publishButtons = await page.$$('::-p-xpath(//div[.//span[text()="Publish"]])');
+                                                        const publishButton = await page.$('//div[.//span[text()="Publish"]]');
+                                                        const publishButtons = await page.$$('//div[.//span[text()="Publish"]]');
 
 
 
@@ -1964,7 +1987,7 @@ async function  createMarketplaceListing(page,browser){
                                                     console.log("Suggested Groups Are more than 20 so Select RRandlomly 20 oof them here is the length     " + divbuttons.length);
 
 
-                                                    const maxToPick=Math.min(30,divbuttons.length)
+                                                    const maxToPick=Math.min(50,divbuttons.length)
                                                     
                                                     for(let i=0; alloweddivbuttons.length<maxToPick; i++){
 
@@ -2046,7 +2069,7 @@ async function  createMarketplaceListing(page,browser){
                                                 })
 
 
-                                                await page.waitForSelector(".xb57i2i.x1q594ok.x5lxg6s.x78zum5.xdt5ytf.x6ikm8r.x1ja2u2z.x1pq812k.x1rohswg.xfk6m8.x1yqm8si.xjx87ck.x1l7klhg.x1iyjqo2.xs83m0k.x2lwn1j.xx8ngbg.xwo3gff.x1oyok0e.x1odjw0f.x1e4zzel.x1n2onr6.xq1qtft")
+                                                await page.locator(".xb57i2i.x1q594ok.x5lxg6s.x78zum5.xdt5ytf.x6ikm8r.x1ja2u2z.x1pq812k.x1rohswg.xfk6m8.x1yqm8si.xjx87ck.x1l7klhg.x1iyjqo2.xs83m0k.x2lwn1j.xx8ngbg.xwo3gff.x1oyok0e.x1odjw0f.x1e4zzel.x1n2onr6.xq1qtft", {timeout:120000, state:"attached"})
 
                                                 await page.evaluate(async()=>{
                         
@@ -2140,7 +2163,7 @@ async function  createMarketplaceListing(page,browser){
 
                                                         //wait for 30 seconds after clicking the Next button before taking screenshot
                                                         await page.evaluate(()=>{
-                                                            return new Promise(resolve=> setTimeout(resolve,15000))
+                                                            return new Promise(resolve=> setTimeout(resolve,20000))
                                                         })
                                                     }
                                                     else{
@@ -2152,7 +2175,7 @@ async function  createMarketplaceListing(page,browser){
 
                                                         //wait for 30 seconds after clicking the Next button before taking screenshot
                                                         await page.evaluate(()=>{
-                                                            return new Promise(resolve=> setTimeout(resolve,15000))
+                                                            return new Promise(resolve=> setTimeout(resolve,20000))
                                                         })
                                                     }
                                                 } else {
@@ -2166,7 +2189,7 @@ async function  createMarketplaceListing(page,browser){
 
                                                     //wait for 30 seconds after clicking the Next button before taking screenshot
                                                     await page.evaluate(()=>{
-                                                        return new Promise(resolve=> setTimeout(resolve,15000))
+                                                        return new Promise(resolve=> setTimeout(resolve,20000))
                                                     })
                                                 }
 
