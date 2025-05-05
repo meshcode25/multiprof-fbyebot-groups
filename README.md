@@ -18,7 +18,7 @@ Steps to Set Up this Tool:
      file 2(product description/details file):-(the other file you  will follow the following pattern (EXACTLY like below-otherwise might not work )for i.e listingType:Item for sale-:
         title: AUDI SQ5/RSQ5
         price: 4900000
-        category: Auto parts
+        category: Auto parts, Cars & Car parts, Parts 
         condition: New
        description: 🚀🔥 Audi SQ5/RSQ5 – Power Meets Prestige 🔥🚀 ... Looking for SUV muscle wrapped in luxury?... The Audi SQ5 is your perfect blend of speed, space & sophistication. ...                              Schedule a test drive today. ... 🔥Asking 4.9M...🤙Call/Whatsapp 0715633999 for viewing
         tags:audi...audi rsq5...audi sq5...audi...rsq5...q5...peugeot...peugeot 308...308...Mazda...mazda demio...demio...honda fit...fit...shuttle...honda fit
