@@ -1,24 +1,4 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Launch the browser and open a new blank page
 // app.js
 
@@ -32,24 +12,6 @@ async function runAutomation() {
         // Example placeholder:
         // await launchBrowserForProfile(profilePath);
         // await doAutomation(page);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -69,16 +31,19 @@ async function runAutomation() {
         dotenv.config();
         
         
-        const puppeteer = require('puppeteer-extra'); // or puppeteer-core
+        // const puppeteer = require('puppeteer-extra'); // or puppeteer-core
         const path = require('path');
         const fs = require('fs');
         const os = require('os');
         const { platform } = require('process');
+        const { chromium } = require('playwright');
+        const { spawn } = require('child_process');
+        const { exec } = require('child_process');
+        // const net = require("net")s;
         
         
-        const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-        
-        puppeteer.use(StealthPlugin());
+        // const StealthPlugin = require('puppeteer-extra-plugin-stealth');        
+        // puppeteer.use(StealthPlugin());
         
         // // To get __dirname and __filename in CommonJS
         // const fileur = __filename || require('url').fileURLToPath(import.meta.url);
@@ -238,38 +203,114 @@ async function runAutomation() {
                 }
         
         
-                // Rest of your bot code here...
+                function getAppDataDir(appName = 'multiprofile-fbyebot-us-win') {
+                    const home = os.homedir();
         
+                    if (platform === 'win32') {
+                        return path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), appName);
+                    }
         
-                // const browser = await puppeteer.launch({
-                //     headless: false, // Optional: Run in non-headless mode to see the browser
-                //     executablePath:chromePath,
-                //     args: [
-                //             // '--disable-setuid-sandbox',
-                //             // '--no-sandbox', // Optional argument for running in CI/CD environments
-                //             '--disable-notifications', // This argument disables browser notifications
-                //             '--user-data-dir=/home/yegon/.config/google-chrome',
-                //             '--profile-directory=Profile 3',
+                    // Linux and macOS
+                    return path.join(home, '.config', appName);
+                }
         
-                //             '--disable-blink-features=AutomationControlled',
-                //             '--disable-infobars',
-                //             '--remote-debugging-port=0', // Disables remote debugging
-                //             '--disable-web-security',
-                //             '--allow-running-insecure-content',
-                //     ],
-                //     // userDataDir: './usercache/yegonk247'
-                //     // userDataDir: './usercache/yegonk247'
-                //     // userDataDir: './usercache/manukiruii'
-                //     // userDataDir: './usercache/meshcode'
-                //     // userDataDir: './usercache/kiprotichkiproperties'
-                //     // userDataDir: './usercache/meslelu'
-                //     // userDataDir: './usercache/valorinecherop'
-                // });
+                const appDir = getAppDataDir(); // e.g., ~/.config/fbyebot or %APPDATA%\fbyebot
+
+
+                 // Ensure folder exists
+                 if (!fs.existsSync(appDir)) {
+                     fs.mkdirSync(appDir, { recursive: true });
+                    console.log("No AppDir Found Just Created a New AppDir  at ", appDir);
+                }
+                console.log("AppDir Found, Continue...")
+                fs.chmodSync(appDir,0o755)
+            
         
+                const chromeUserDataDir = path.join(appDir, "fbyebotChromeProfiles")
         
+                if(!fs.existsSync(chromeUserDataDir)){
+                    fs.mkdirSync(chromeUserDataDir,{recursive:true});
+                    console.log(" chromeUserDataDir not Found!! , Just Created a new chromeUserDataDir  in ", chromeUserDataDir );
+                }
+            
+                console.log("chromeUserDataDir path Found at "  , chromeUserDataDir, " Continue... ")
+                fs.chmodSync(chromeUserDataDir,0o755)
+            
+
+
+               //LIst of profiles to use 
+               const userprofiles=[
+                    "Default","Profile 1","Profile 2","Profile 3","Profile 4","Profile 5",
+                    "Profile 6","Profile 7","Profile 8","Profile 9","Profile 12","Profile 10",
+                    "Profile 11","Profile 12","Profile 13","Profile 14","Profile 15",
+                    "Profile 16","Profile 17","Profile 18","Profile 19","Profile 20"
+                ]
         
+                for(const userprofile of userprofiles){
+                    const chromeUserProfile = path.join(chromeUserDataDir, userprofile)
+                    
+                    if(!fs.existsSync(chromeUserProfile)){
+                        fs.mkdirSync(chromeUserProfile,{recursive:true});
+                        console.log(" chromeUserProfile  not Found, Just Created a new chromeUserDataDir  in ", chromeUserProfile );
+                    }
+                
+                    console.log("chromeUserProfile path Found at "  , chromeUserProfile, " Continue... ")
+                    fs.chmodSync(chromeUserProfile,0o755)
+                
+                }
         
+
+                // // Function to get the current profile index based on a 3-hour rotation
+                // function getRotatedIndex() {
+                //     const totalProfiles = userprofiles.length;
+                //     const now = new Date();
+                //     return Math.floor(now.getHours() / 3) % totalProfiles; // Change the profile every 3 hours
+                // }
         
+                // Function to get the current profile index based on a 10 MInuts for testing -hour rotation
+                function getRotatedIndex() {
+                    const totalProfiles = userprofiles.length;
+                    const now = new Date();
+                    return Math.floor( (now.getMinutes()) / 10) % totalProfiles; // Change the profile every 3 hours
+                }
+        
+                //get profile index
+                const profileIndex=getRotatedIndex();
+                console.log("\n Here isthe Index to select Profile Index " + profileIndex)
+        
+
+
+
+                console.log('\n 🚀 Launching Chrome with Playwright Persistent Storage... First here is the Chrome Path  '   ,chromePath , 'Here is the user--data-dir ' + chromeUserDataDir, "and here is the profile-diretory  " + userprofiles[profileIndex]);
+        
+
+
+
+                const userDataDir = path.join(chromeUserDataDir,userprofiles[profileIndex])
+                
+                const browser= await chromium.launchPersistentContext(userDataDir, {
+                  headless: false,
+                  executablePath: chromePath,
+                  args: [
+                    '--disable-notifications',
+                    '--disable-blink-features=AutomationControlled',
+                    '--disable-infobars',
+                    '--no-sandbox', // Use with caution, understand the security implications
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--ignore-certificate-errors',
+                    '--ignore-ssl-errors',
+                    '--disable-extensions', // Sometimes extensions can interfere
+                    '--disable-component-extensions-with-background-pages',
+                  ]
+                });
+                
+                // Continue with automation using `browserContext.pages()[0]` or `browserContext.newPage()`
+                
+
+
+
+
         
         
         
@@ -277,19 +318,6 @@ async function runAutomation() {
         
                 ///Tryinng to Spawan my Chrome profiles 
         
-                const { chromium } = require('playwright');
-                const { spawn } = require('child_process');
-                // const path = require('path');
-                // const net = require("net")s;
-        
-                // (async () => {
-                // const chromePath = `"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"`;
-                // const userDataDir = `"C:\\Users\\YourName\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 1"`;
-
-
-
-                const { exec } = require('child_process');
-                
                 const killchromes= async()=>{
                     const isWindows = process.platform === 'win32';
                     
@@ -319,121 +347,11 @@ async function runAutomation() {
                         
 
                     })
-                }
-                
-                
-                await killchromes()
-
-        
-                //LIst of profiles to use 
-                const userprofiles=[
-                    "Default",
-                    "Profile 1",
-                    "Default",
-                    "Default"
-                    
-                ]
-                // "Profile 2",
-                // "Profile 3",
-                // "Profile 4",
-                // "Profile 5",
-                // "Profile 6",
-                // "Profile 7",
-                // "Profile 8",
-                // "Profile 9",
-                // "Profile 12",
-                // "Profile 10",
-                // "Profile 11",
-        
-                // // Function to get the current profile index based on a 3-hour rotation
-                // function getRotatedIndex() {
-                //     const totalProfiles = userprofiles.length;
-                //     const now = new Date();
-                //     return Math.floor(now.getHours() / 3) % totalProfiles; // Change the profile every 3 hours
-                // }
-          
-                // Function to get the current profile index based on a 10 MInuts for testing -hour rotation
-                function getRotatedIndex() {
-                    const totalProfiles = userprofiles.length;
-                    const now = new Date();
-                    return Math.floor( (now.getMinutes()) / 10) % totalProfiles; // Change the profile every 3 hours
-                }
-        
-                //get profile index
-                const profileIndex=getRotatedIndex();
-                console.log("Here isthe Index to select Profile Index " + profileIndex)
-        
-        
-                // const chromePath = 
-                // const userDataDir =  '/home/yegon/.config/google-chrome'
-                // const userDataDir = 'C:\\Users\\thanu\\AppData\\Local\\Google\\Chrome\\User Data';
-                const userDataDir = "C:\\Users\\kipro\\AppData\\Local\\Google\\Chrome\\User Data";
-        
-        
-                console.log('\n 🚀 Launching Chrome with remote debugging... First here is the Chrome Path  '   ,chromePath , 'Here is the user--data-dir ' + userDataDir, "and here is the profile-diretory  " + userprofiles[profileIndex]);
-        
-                "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-                // const chrome = spawn(`"${chromePath}"`, [
-                // Launch Chrome with flags
-                const chrome = spawn("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", [
-                    '--remote-debugging-port=9222',
-                    `--user-data-dir="${userDataDir}"`,
-                    '--no-first-run',
-                    '--no-default-browser-check',
-                    `--profile-directory="${userprofiles[profileIndex]}"`,
-                    '--remote-debugging-address=127.0.0.1'
-                    
-                ], {
-                    shell: true,
-                    detached: true,
-                    // stdio: 'ignore'
-                    stdio:'inherit'
-                });
-
-                chrome.unref(); // Allow node to exit independently of chrome process
-        
-                // Wait a few seconds to make sure Chrome is fully started
-                await new Promise(resolve => setTimeout(resolve, 5000));
-        
-        
-                console.log("\n Chrome lauched successsfully !! \n")
-        
-        
-        
-                // Wait a few seconds to make sure Chrome is fully started
-                await new Promise(resolve => setTimeout(resolve, 30000));
-        
-        
-        
-        
-        
-        
-        
-        
-        
-                console.log('🔗 Connecting Playwright to Chrome...');
-                const browser = await chromium.connectOverCDP('http://127.0.0.1:9222', {timeout:60000});
-                console.log('🔗 Successfully Connected Playwright to Chrome...');
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+                }        
+            
+                //Kill Chrome processes 
+                // await killchromes()
+ 
         
         
                 // const contexts = browser.contexts();
@@ -574,31 +492,13 @@ async function runAutomation() {
         
         
         
-                function getAppDataDir(appName = 'fbyebot-us-2.0') {
-                    const home = os.homedir();
-        
-                    if (platform === 'win32') {
-                        return path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), appName);
-                    }
-        
-                    // Linux and macOS
-                    return path.join(home, '.config', appName);
-                }
-        
-                const appDir = getAppDataDir(); // e.g., ~/.config/fbyebot or %APPDATA%\fbyebot
-        
         
             
                 // Where to store user files (can be current dir or ~/.config/appname)
                 const envPath = path.join(appDir, '.env');
                 const cookiesPath = path.join(appDir, 'cookies.json');  
                 
-                // Ensure folder exists
-                if (!fs.existsSync(appDir)) {
-                    fs.mkdirSync(appDir, { recursive: true });
-                }
-                fs.chmodSync(appDir,0o755)
-                
+               
                 // Create default .env if missing
                 if (!fs.existsSync(envPath)) {
                     fs.writeFileSync(envPath, 'EMAIL=\nPASSWORD=\nYOURPRODUCTSROOTFOLDER=\n');
