@@ -240,12 +240,14 @@ async function runAutomation() {
 
                //LIst of profiles to use 
                const userprofiles=[
-                    "Default","Profile 1","Profile 2","Profile 3","Profile 4","Profile 5",
-                    "Profile 6","Profile 7","Profile 8","Profile 9","Profile 12","Profile 10",
-                    "Profile 11","Profile 12","Profile 13","Profile 14","Profile 15",
-                    "Profile 16","Profile 17","Profile 18","Profile 19","Profile 20"
+                    "Default","Profile 1","Profile 2","Profile 3"
                 ]
-        
+                // "Profile 3","Profile 4","Profile 5",
+                // "Profile 6","Profile 7","Profile 8","Profile 9","Profile 12","Profile 10", 
+                // "Profile 11","Profile 12","Profile 13","Profile 14","Profile 15",
+                // "Profile 16","Profile 17","Profile 18","Profile 19","Profile 20"
+
+
                 for(const userprofile of userprofiles){
                     const chromeUserProfile = path.join(chromeUserDataDir, userprofile)
                     
@@ -376,29 +378,35 @@ async function runAutomation() {
                 
         
         
-        
-                let page;
+                //launch new page
+                const page=await browser.newPage();
                 
-                // find the page with the new-tab URL
-                for (const context of browser.contexts()) {
-                    for (const p of context.pages()) {
-                        if (p.url() === 'chrome://new-tab-page/') {
-                            console.log('🎯 Found clean launch tab, using this page.');
-                            page = p;
-                            break;
-                        }
-                    }
-                    if (page) break;
-                }
+                console.log("Waiting for 10 Seconds for fun")
+
+                await page.evaluate(async ()=>{
+                    return new Promise(resolve => setTimeout(resolve, 10000))
+                })
+                // setTimeout(new Promise(resolve)30000)
+                // // find the page with the new-tab URL
+                // for (const context of browser.contexts()) {
+                //     for (const p of context.pages()) {
+                //         if (p.url() === 'chrome://new-tab-page/') {
+                //             console.log('🎯 Found clean launch tab, using this page.');
+                //             page = p;
+                //             break;
+                //         }
+                //     }
+                //     if (page) break;
+                // }
                 
-                // fallback: if no new-tab-page found, just use the first context
-                if (!page) {
-                    console.warn('⚠️ No new-tab page found. Defaulting to new page in first context.');
-                    const context = browser.contexts()[0];
-                    page = await context.newPage();
-                }
+                // // fallback: if no new-tab-page found, just use the first context
+                // if (!page) {
+                //     console.warn('⚠️ No new-tab page found. Defaulting to new page in first context.');
+                //     const context = browser.contexts()[0];
+                //     page = await context.newPage();
+                // }
                 
-                // await page.goto('https://facebook.com');
+                // // await page.goto('https://facebook.com');
                 
         
                 
@@ -427,19 +435,28 @@ async function runAutomation() {
         
                 console.log('🧭 Page:', page.url());
                 
-                await page.goto('https://facebook.com');
+                await page.goto('https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout:30000 });
         
+                
+
+
                 const url = page.url();
-        
-                if (url.includes('/login') || url.includes('login_attempt')) {
-                    console.log('❌ Not logged in!');
-                } else {
-                    console.log('✅ Already logged in!');
+                
+                try{
+                    // await page.wait
+
+                    //  Wait and click on first result.
+                
+                    await page.waitForSelector("a[aria-label='Home'][role='link']")
+            
+                    console.log('✅ Already logged in to FACEBOOK!');
                 }
-        
-                console.log('🛑 Done! (Press CTRL+C to quit)');
-                // })();
-        
+                catch(err){
+                    if(err.name==="TimeoutError"){
+                        console.log('❌ Not logged in to Facebook! Kindly Check the Browser and Login');
+                    }
+                }
+
         
         
         
