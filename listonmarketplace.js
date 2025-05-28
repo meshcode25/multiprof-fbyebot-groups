@@ -13,7 +13,7 @@ async function  createMarketplaceListing(page,browser){
 
     try{
         
-        function getAppDataDir(appName = 'fbyebot-us-2.0') {
+        function getAppDataDir(appName = 'multiprofile-fbyebot-groups') {
             const home = os.homedir();
 
             if (platform === 'win32') {
@@ -766,6 +766,7 @@ async function  createMarketplaceListing(page,browser){
                                                 // console.log("Just clicked the Images Upload buttons")                                                
                                                 
                                                 // await page.setInputFiles('//label/input[type="file" accept="image/*,image/heif,image/heic"', imagespaths);   
+
                                                 await page.setInputFiles('label input[type="file"][accept="image/*,image/heif,image/heic"]', imagespaths);
                                                 console.log("Just selected the images to upload  and uploaded wait 5 seconds before continue")
 

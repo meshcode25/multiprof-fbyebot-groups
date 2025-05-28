@@ -3,7 +3,10 @@
 // app.js
 
 async function runAutomation() {
-    console.log("\n\n 🕐 Starting automation at", new Date().toLocaleString() ," \n");
+    console.log("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n🕐 Starting automation at", new Date().toLocaleString() ," \n");
+
+
+
 
     try {
         // ✅ Put all your automation code here:
@@ -53,10 +56,10 @@ async function runAutomation() {
         
         // Import your own module (also must be CommonJS!)
         // // you’ll need to update these files too
-        // const { postTogroups } = require('./posttogroups.js'); 
+        const { postTogroups } = require('./posttogroups.js'); 
         // const { listInmorePlaces }= require('./listinmoreplaces.js');
         
-        const { createMarketplaceListing } =require( './listonmarketplace.js');
+        // const { createMarketplaceListing } =require( './listonmarketplace.js');
         
         
         
@@ -73,6 +76,59 @@ async function runAutomation() {
         (async ()=>{
         
             try{
+
+
+                //First Killing all Existing chromes 
+                const killchromes= async()=>{
+                    const isWindows = process.platform === 'win32';
+                    
+                    const killCommand = isWindows
+                    ? 'taskkill /F /IM chrome.exe /T' // Windows
+                    : 'pkill chrome';                // Linux/macOS
+                    
+                    return new Promise((resolve,reject)=>{
+
+                        exec(killCommand, (error, stdout, stderr) => {
+                            if (error) {
+                                console.error(`❌ Error killing Chrome: ${error.message}`);
+                                setTimeout(resolve,3000)
+
+                                // reject(error)
+                                return;
+                            }
+                            if (stderr) {
+                                console.error(`⚠️ stderr: ${stderr}`);
+                                // resolve(resolve=> setTimeout(resolve,30000))
+                                setTimeout(resolve,3000)
+
+                                return;
+                            }
+                                console.log(' ✅ Chrome processes killed');
+                                // resolve(resolve=> setTimeout(resolve,30000))
+                                setTimeout(resolve,3000)
+
+                        });
+                        
+
+                    })
+                }        
+            
+                //Kill Chrome processes 
+                console.log("\About to kill All Chrome Processes Running Before Starting the Program waiting for 5 Seconds");
+                await delay(5000)
+
+                function delay(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                  }
+                  
+                //   await killchromes()
+                console.log("Waited 10 Seconds")
+                // await killchromes()
+
+
+
+
+
         
                 console.log('WELCOME TO Fbyebot FB Marketplace Automation Software; The App Just Started')
         
@@ -203,7 +259,7 @@ async function runAutomation() {
                 }
         
         
-                function getAppDataDir(appName = 'multiprofile-fbyebot-us-win') {
+                function getAppDataDir(appName = 'multiprofile-fbyebot-groups') {
                     const home = os.homedir();
         
                     if (platform === 'win32') {
@@ -238,14 +294,17 @@ async function runAutomation() {
             
 
 
+
+
                //LIst of profiles to use 
                const userprofiles=[
-                    "Default","Profile 1","Profile 2","Profile 3"
+                    "Default","Profile 1","Profile 2","Profile 3","Profile 4"
                 ]
+                    
+                // "Profile 20", "Profile 10","Default","Profile 2","Profile 1",
                 // "Profile 3","Profile 4","Profile 5",
                 // "Profile 6","Profile 7","Profile 8","Profile 9","Profile 12","Profile 10", 
                 // "Profile 11","Profile 12","Profile 13","Profile 14","Profile 15",
-                // "Profile 16","Profile 17","Profile 18","Profile 19","Profile 20"
 
 
                 for(const userprofile of userprofiles){
@@ -262,20 +321,25 @@ async function runAutomation() {
                 }
         
 
-                // // Function to get the current profile index based on a 3-hour rotation
-                // function getRotatedIndex() {
-                //     const totalProfiles = userprofiles.length;
-                //     const now = new Date();
-                //     return Math.floor(now.getHours() / 3) % totalProfiles; // Change the profile every 3 hours
-                // }
-        
-                // Function to get the current profile index based on a 10 MInuts for testing -hour rotation
+                // Function to get the current profile index based on a 3-hour rotation
                 function getRotatedIndex() {
                     const totalProfiles = userprofiles.length;
                     const now = new Date();
-                    return Math.floor( (now.getMinutes()) / 10) % totalProfiles; // Change the profile every 3 hours
+                    return Math.floor(now.getHours() / 1.99) % totalProfiles; // Change the profile every 1.99 hours
                 }
         
+                // // Function to get the current profile index based on a 10 MInuts for testing -hour rotation
+                // function getRotatedIndex() {
+                //     const totalProfiles = userprofiles.length;
+                //     const now = new Date();
+                //     return Math.floor( (now.getMinutes()) / 1.9) % totalProfiles; // Change the profile every 3 hours
+                // }
+        
+
+            
+
+
+
                 //get profile index
                 const profileIndex=getRotatedIndex();
                 console.log("\n Here isthe Index to select Profile Index " + profileIndex)
@@ -311,75 +375,14 @@ async function runAutomation() {
                 
 
 
-
-
-        
-        
-        
-        
-        
-                ///Tryinng to Spawan my Chrome profiles 
-        
-                const killchromes= async()=>{
-                    const isWindows = process.platform === 'win32';
-                    
-                    const killCommand = isWindows
-                      ? 'taskkill /F /IM chrome.exe /T' // Windows
-                      : 'pkill chrome';                // Linux/macOS
-                    
-                    return new Promise((resolve,reject)=>{
-
-                        exec(killCommand, (error, stdout, stderr) => {
-                            if (error) {
-                                console.error(`\n❌ Error killing Chrome: ${error.message}`);
-                                resolve(resolve=> setTimeout(resolve,3000))
-
-                                // reject(error)
-                                return;
-                            }
-                            if (stderr) {
-                                console.error(`\n⚠️ stderr: ${stderr}`);
-                                resolve(resolve=> setTimeout(resolve,3000))
-
-                                return;
-                            }
-                                console.log('\n ✅ Chrome processes killed');
-                                resolve(resolve=> setTimeout(resolve,3000))
-                        });
-                        
-
-                    })
-                }        
-            
-                //Kill Chrome processes 
-                // await killchromes()
- 
-        
-        
-                // const contexts = browser.contexts();
-        
-        
-                // for (const context of contexts) {
-                //     console.log("here next context", context)
-                //     const pages = context.pages();
-                //     for (const page of pages) {
-                //         console.log( "Available pages  ", page.url());
-                //     }
-                // }
-        
-                // const pages=context.pages();
-        
-                // for(const page of page){
-                //     console.log( "Available pages  ", page.url());
-                    
-                // }
-                
-                
-                
-        
         
                 //launch new page
                 const page=await browser.newPage();
+
+
+                // Set screen size.
+                await page.setViewportSize({width: 1530, height: 700});
+        
                 
                 console.log("Waiting for 10 Seconds for fun")
 
@@ -435,7 +438,7 @@ async function runAutomation() {
         
                 console.log('🧭 Page:', page.url());
                 
-                await page.goto('https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout:30000 });
+                await page.goto('https://www.facebook.com/', { waitUntil: 'domcontentloaded', timeout:60000 });
         
                 
 
@@ -497,9 +500,6 @@ async function runAutomation() {
                 
         
         
-        
-                // Set screen size.
-                // await page.setViewportSize  ({width: 1500, height: 700});
         
         
                 // // // Allow notifications for the page
@@ -631,10 +631,10 @@ async function runAutomation() {
                         // }); 
         
                         
-                        //await postTogroups(page,browser);
+                        await postTogroups(page,browser);
         
         
-                        await createMarketplaceListing(page,browser);
+                        // await createMarketplaceListing(page,browser);
         
                         // await listInmorePlaces(page,browser);
         
@@ -910,10 +910,10 @@ async function runAutomation() {
                         // }); 
         
                         
-                        //await postTogroups(page,browser);
+                        await postTogroups(page,browser);
         
         
-                        await createMarketplaceListing(page,browser);
+                        // await createMarketplaceListing(page,browser);
         
                         // await listInmorePlaces(page,browser);
         
@@ -968,10 +968,12 @@ async function runAutomation() {
 
     console.log("⏳ Waiting 3 hours until next run...\n");
 
+    // await browser.close()
+
     // Wait for 3 hours (10 min = 600000 for testing)
-    // setTimeout(runAutomation, 2 * 60 * 60 * 1000);
+    setTimeout(runAutomation, 2 * 60 * 60 * 1000);
     // Wait for every 3 minuts to start application 
-    setTimeout(runAutomation, 10 * 60 * 1000);
+    // setTimeout(runAutomation, 2 * 60 * 1000);
 
 }
 

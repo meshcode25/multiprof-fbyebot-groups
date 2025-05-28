@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+const dotenv= require('dotenv');
 dotenv.config();
 
 // import { timeout } from 'puppeteer-core';
@@ -9,24 +9,80 @@ dotenv.config();
 // import puppeteer, { ElementHandle, PageEvent } from 'puppeteer';
 
 
-import path from 'path';
-import fs from "fs"
-import { createTracing } from 'trace_events';
-import { TimeoutError } from 'puppeteer';
+// import { TimeoutError } from 'puppeteer');
 
 
-export async function postTogroups(page,browser){
+
+
+
+
+
+
+const path=require('path');
+const fs= require("fs")
+const {TimeoutError }=require( 'puppeteer');
+const os=require("os");
+const {platform} =require("process");
+const  { createTracing } =require( 'trace_events');
+const { timeout } = require('puppeteer');
+
+
+
+
+
+
+
+
+
+async function postTogroups(page,browser){
 
 
     try{
 
-        console.log("Here is the page to be FINALLY closed aT THE BEGINNING  " + page)
+        console.log("Here is the Groups page to be FINALLY closed here is the  THE BEGINNING  " + page)
 
         console.log("Here is the browser to be FINALLY closed" + browser)
 
+    
+        function getAppDataDir(appName = 'multiprofile-fbyebot-groups') {
+            const home = os.homedir();
+
+            if (platform === 'win32') {
+                return path.join(process.env.APPDATA || path.join(home, 'AppData', 'Roaming'), appName);
+            }
+
+            // Linux and macOS
+            return path.join(home, '.config', appName);
+        }
+
+        const appDir = getAppDataDir(); // e.g., ~/.config/fbyebot or %APPDATA%\fbyebot
+
+        // Ensure folder exists
+        if (!fs.existsSync(appDir)) {
+            fs.mkdirSync(appDir, { recursive: true });
+        }
+        fs.chmodSync(appDir,0o755)
 
 
-        
+
+        const posttogroupsimgs = path.join(appDir, 'posttogroupsimgs', 'userscache','images');
+
+        if (!fs.existsSync(posttogroupsimgs)) {
+           fs.mkdirSync(posttogroupsimgs, { recursive: true });
+        }
+           fs.chmodSync(posttogroupsimgs,0o755)
+
+
+        const marketplacelistingimgs = path.join(appDir, 'marketplacelistingimgs');
+
+        if (!fs.existsSync(marketplacelistingimgs)) {
+            fs.mkdirSync(marketplacelistingimgs, { recursive: true });
+        }
+            fs.chmodSync(marketplacelistingimgs,0o755)
+   
+           
+
+
         
         // Listen for console messages from the browser context
         page.on('console', (msg) =>
@@ -123,7 +179,7 @@ export async function postTogroups(page,browser){
         console.log("About to post to Groups")
         console.log("here is the origin url of homne page " , originalurl)
 
-        await page.goto("https://web.facebook.com/groups/joins/?nav_source=tab&ordering=viewer_added", { waitUntil: 'networkidle2', timeout:80000 });
+        await page.goto("https://web.facebook.com/groups/joins/?nav_source=tab&ordering=viewer_added", { waitUntil: 'domcontentloaded', timeout:80000 });
 
 
         // Log the current URL
@@ -170,7 +226,7 @@ export async function postTogroups(page,browser){
 
 
 
-        await page.screenshot({ path: "./userscache/images/groups.png" });
+        await page.screenshot({ path: path.join(posttogroupsimgs, "groups.png" )});
 
 
         console.log("already taken a screenshot of the groups link did you see the screenshot in groups.png")
@@ -195,12 +251,12 @@ export async function postTogroups(page,browser){
         
         console.log("SCREEN  Height of the document  inside the while loop FOR THE WHOLE SCREEN" + screenHeight);
         
-        
+        console.log("\n \n Now Scrolling the joined groups to the Bottom  Wait.....\n")        
 
         let totalHeight = 0;
         let distance =300; // scroll step in pixels
         let previousHeight = 0;
-        let maxScrolls = 50; // Safety limit in case of infinite scroll
+        let maxScrolls = 300; // Safety limit in case of infinite scroll
         let scrolls = 0;
         
 
@@ -214,11 +270,11 @@ export async function postTogroups(page,browser){
 
             let viewportHeight= await page.evaluate(() => document.body.scrollHeight);
             
-            console.log("Document Height of the document  inside the  TOP OF while loop loop TOP HEIGHT  <br> " + viewportHeight)
+            // console.log("Document Height of the document  inside the  TOP OF while loop loop TOP HEIGHT  <br> " + viewportHeight)
 
 
 
-            console.log("here is the distane length  + " + distance)
+            // console.log("here is the distane length  + " + distance)
  
             // Scroll by the defined distance
             await page.evaluate((distance) => {
@@ -247,10 +303,10 @@ export async function postTogroups(page,browser){
             // console.log("New Document Height after change in Scroll AFTRa NEW SCROLL  " + viewportHeight)
 
 
-            console.log("New Document Height after change in Scroll AFTRa NEW SCROLL  " + newviewportHeight)
+            // console.log("New Document Height after change in Scroll AFTRa NEW SCROLL  " + newviewportHeight)
 
 
-            console.log("scrolls if it will break the loop + scrolls " + scrolls )
+            // console.log("scrolls if it will break the loop + scrolls " + scrolls )
 
 
 
@@ -268,18 +324,18 @@ export async function postTogroups(page,browser){
 
             // wait for 30 seconds before starting to scroll the joined groups 
             await page.evaluate(()=>{
-                return new Promise(resolve => setTimeout(resolve, 600))
+                return new Promise(resolve => setTimeout(resolve, 1000))
             }); 
 
 
 
-            await page.screenshot({ path: "./userscache/images/groupsscroll.png" });
+            await page.screenshot({ path:path.join(posttogroupsimgs, "groupsscroll.png" )});
 
-            console.log("already taken a screenshot of the groups link did you see the screenshot after SCROLL")
+            // console.log("already taken a screenshot of the groups link did you see the screenshot after SCROLL")
     
 
 
-            console.log("scrolls if the loop still goes on + scrolls " + scrolls )
+            // console.log("scrolls if the loop still goes on + scrolls " + scrolls )
         }
         
 
@@ -353,6 +409,14 @@ export async function postTogroups(page,browser){
             hrefs.forEach(link => {
                 links.push(link.href);
             });
+
+            // Fisher-Yates (Knuth) shuffle algorithm
+            for (let i = links.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [links[i], links[j]] = [links[j], links[i]]; // Swap elements
+            }
+
+
         
             // console.log('Group Links:', groupLinks);
             return links;
@@ -385,8 +449,8 @@ export async function postTogroups(page,browser){
 
         // console.log("Here are the rest from 300-400 links ")
 
-        for(let i=30; i<100; i++){
-            console.log(joinedgroupslinks[i]);
+        for(const eachjoinedgroup of joinedgroupslinks){
+            console.log(eachjoinedgroup)
         
         }
 
@@ -402,7 +466,7 @@ export async function postTogroups(page,browser){
         await page.evaluate(()=>{new Promise(resolve => setTimeout(resolve, 3000))}); 
        
 
-        await page.screenshot({path:"./userscache/images/joinedgroup.png"})
+        await page.screenshot({path:  path.join(posttogroupsimgs, "joinedgroup.png" )})
 
 
         // console.log("Here is the page to be FINALLY closed aT THE BEGINNING  " + page)
@@ -410,11 +474,11 @@ export async function postTogroups(page,browser){
         // console.log("Here is the Browser to be FINALLY closed" + browser)
 
 
-        // await page.screenshot({path:"./userscache/images/closepage.png"})
+        // await page.screenshot({path:  path.join(posttogroupsimgs, "closepage.png" )})
 
         // await page.close();
 
-        // // await page.screenshot({path:"./userscache/images/closedpage.png"})
+        // // await page.screenshot({path:  path.join(posttogroupsimgs, "closedpage.png" )})
 
 
         // await browser.close();
@@ -423,7 +487,7 @@ export async function postTogroups(page,browser){
 
 
 
-        for(let i=90; i<130; i++){
+        for(let i=0; i<130; i++){
             // console.log(grouplink);
 
                 // setTimeout(()=>{
@@ -439,7 +503,7 @@ export async function postTogroups(page,browser){
                                 
                 //wait for 30 seconds after clicking the Next button before taking screenshot
                 await page.evaluate(()=>{
-                    return new Promise(resolve=> setTimeout(resolve,10000))
+                    return new Promise(resolve=> setTimeout(resolve,5000))
                 })
 
                 console.log("\n About to move to the next gropu to post" + "Group Link Index =  i="  + i + "\n" )
@@ -458,7 +522,7 @@ export async function postTogroups(page,browser){
                 console.log(joinedgroupslinks[i]);
            
                 //first go to facebook homepage
-                await page.goto(`https://web.facebook.com/`, { waitUntil: 'networkidle2', timeout:80000 }); // Wait until the network is idle
+                await page.goto(`https://web.facebook.com/`, { waitUntil: 'domcontentloaded', timeout:80000 }); // Wait until the network is idle
        
 
                 // await page.goto("https://www.facebook.com/groups"); // Go to any Facebook page
@@ -485,7 +549,7 @@ export async function postTogroups(page,browser){
                 })
 
                 //wait for 30 seconds then got to the indifvidual group page
-                await page.goto(`${joinedgroupslinks[i]}`, { waitUntil: 'networkidle2', timeout:80000 }); // Wait until the network is idle
+                await page.goto(`${joinedgroupslinks[i]}`, { waitUntil: 'domcontentloaded', timeout:80000 }); // Wait until the network is idle
        
                 // wait for 30 seconds before starting to scroll the joined groups 
                 // await page.evaluate(()=>{new Promise(resolve => setTimeout(resolve, 5000))}); 
@@ -496,16 +560,15 @@ export async function postTogroups(page,browser){
                     return new Promise(resolve=> setTimeout(resolve,1000))
                 })
 
-                await page.screenshot({path:"./userscache/images/mygroups.png", timeout:30000})
+                await page.screenshot({path:  path.join(posttogroupsimgs, "mygroups.png" ), timeout:30000})
                 //console.log( of after clicking the Next Button);
                 console.log("Already Taken screenshot After each Group changes URL to group ")
-
-                // Wait for the div with the specified aria-label to be available
-                await page.waitForSelector('div[aria-label="Sell Something"]');
-
+                
                 // Find the div element
-
-
+                // Wait for the div with the specified aria-label to be available
+                // await page.waitForSelector('div[aria-label="Sell Something"]');
+                
+                
                 const sellSomethingButton= await page.evaluate(async ()=>{
 
                     const sellSomethingDiv = document.querySelector('div[aria-label="Sell Something"]');
@@ -522,6 +585,15 @@ export async function postTogroups(page,browser){
             
                 // Perform an action on the div, for example, click it
                 if (sellSomethingButton) {
+
+                    //Has markeptplace Quite and go to next groups
+                    console.log("\n Markeplace Button Found!! WAIT 10 SECONDS THEN SKIP AND GO TO NEXT GROUP !!\n")
+                    
+                    // wait for 30 seconds before starting to scroll the joined groups 
+                    await page.evaluate(async ()=>{return new Promise(resolve => setTimeout(resolve, 10000))}); 
+                    
+
+                    return 
 
                     // wait for 30 seconds before starting to scroll the joined groups 
                     await page.evaluate(async ()=>{return new Promise(resolve => setTimeout(resolve, 4000))}); 
@@ -599,7 +671,7 @@ export async function postTogroups(page,browser){
                                     // wait for 30 seconds before starting to scroll the joined groups 
                                     await page.evaluate(async ()=>{return new Promise(resolve => setTimeout(resolve, 2000))}); 
                                 
-                                    await page.screenshot({path:"./userscache/images/itemforsalebutton.png",timeout:60000})
+                                    await page.screenshot({path:  path.join(posttogroupsimgs, "itemforsalebutton.png" ),timeout:60000})
                                     
                                 } catch (error) {
                                     if(error==="TimeoutError"){
@@ -640,7 +712,7 @@ export async function postTogroups(page,browser){
                         await page.evaluate(async ()=>{return new Promise(resolve => setTimeout(resolve, 2000))}); 
                                         
 
-                        await page.screenshot({path:"./userscache/images/listingpopup.png",timeout:60000})
+                        await page.screenshot({path:  path.join(posttogroupsimgs, "listingpopup.png" ),timeout:60000})
                         console.log("took a screenshot of the popup adf adf adfa sfad sfads fadsf adsf adf ")
 
 
@@ -833,7 +905,7 @@ export async function postTogroups(page,browser){
                                     await fileChooser.accept(imagespaths);    
                                     
                                     // "/home/y/fbyebot1.0/phones/451780393_122123902634349689_981859647559599175_n.jpg",                                    
-                                    // "/home/y/Bilder /Screenshot from 2024-08-27 23-36-23.png",    
+                                    // "/home/y/Bilder /Screenshot from 2024-08-27 23-36-23.png" ),    
                                     // "/home/y/fbyebot1.0/phones/451833410_122123902592349689_2546841386593894967_n.jpg",
 
                                     // Set file paths to be uploaded
@@ -850,7 +922,7 @@ export async function postTogroups(page,browser){
                                     await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 2000)));
 
 
-                                    await page.screenshot({path:"./userscache/images/addimgbtn.png",timeout:60000})
+                                    await page.screenshot({path:  path.join(posttogroupsimgs, "addimgbtn.png" ),timeout:60000})
                                 
 
 
@@ -1433,23 +1505,23 @@ export async function postTogroups(page,browser){
 
 
 
-                                        await page.screenshot({path:"./marketplacelistingimgs/addimagesstep.png",timeout:60000})
+                                        await page.screenshot({path:path.join(marketplacelistingimgs,"addimagesstep.png" ),timeout:60000})
 
 
                                         //Select the Descripton Element and fill it with the Description
-                                        await page.waitForSelector('::-p-xpath(//label[.//span[text()="Description"]]//textarea)');
+                                        await page.waitForSelector('  //label[.//span[text()="Description"]]//textarea');
                         
 
 
                                         console.log("here textareas TEXT AREAS SPACE WITH TH FORMATTED DESCRIPTION +   formattedDescription ");
                                         
 
-                                        await page.click('::-p-xpath(//label[.//span[text()="Description"]]//textarea)');
+                                        await page.click(' //label[.//span[text()="Description"]]//textarea');
 
 
                                         console.log("Already Clicked on the Description text Area")
 
-                                        await page.fill('::-p-xpath(//label[.//span[text()="Description"]]//textarea)', formattedDescription);
+                                        await page.fill(' //label[.//span[text()="Description"]]//textarea', formattedDescription);
 
                                         console.log("Successffully clicked and fillled the Desciption Input text Areas ")
 
@@ -1464,7 +1536,7 @@ export async function postTogroups(page,browser){
 
 
 
-                                        await page.screenshot({path:"./marketplacelistingimgs/addimagestep.png", timout:3000})
+                                        await page.screenshot({path:path.join(marketplacelistingimgs,"addimagestep.png" ), timout:3000})
 
                                         console.log("Already taken a screenshot to addimagesstep.png after descritpion filling ")
 
@@ -1478,14 +1550,14 @@ export async function postTogroups(page,browser){
 
 
                                         //Select the Product Tags Element and fill it with the Product Tags
-                                        await page.waitForSelector('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)');
+                                        await page.waitForSelector(' //label[.//span[text()="Product tags"]]//div//div//div//textarea');
                         
 
 
                                         console.log("here textareas TEXT AREAS SPACE For Product Tags +   formattedDescription ");
                                         
 
-                                        await page.click('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)');
+                                        await page.click(' //label[.//span[text()="Product tags"]]//div//div//div//textarea');
 
 
                                         console.log("Already Clicked on the Product Text Areas text Area")
@@ -1494,7 +1566,7 @@ export async function postTogroups(page,browser){
 
                                         for(const productTag of formattedTags){
 
-                                            await page.type('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)', productTag, { delay: 15 });
+                                            await page.type('  //label[.//span[text()="Product tags"]]//div//div//div//textarea', productTag, { delay: 15 });
 
                                             await page.keyboard.press('Enter');
 
@@ -1512,7 +1584,7 @@ export async function postTogroups(page,browser){
 
 
 
-                                        // await page.type('::-p-xpath(//label[.//span[text()="Product tags"]]//div//div//div//textarea)', formattedDescription, { delay: 20 });
+                                        // await page.type('  //label[.//span[text()="Product tags"]]//div//div//div//textarea', formattedDescription, { delay: 20 });
 
                                         console.log("Successffully clicked and fillled the Product Tags ARea Input text Areas ")
 
@@ -1527,7 +1599,7 @@ export async function postTogroups(page,browser){
 
 
 
-                                        await page.screenshot({path:"./marketplacelistingimgs/addimagestep.png", timout:3000})
+                                        await page.screenshot({path:path.join(marketplacelistingimgs,"addimagestep.png" ), timout:3000})
 
                                         console.log("Already taken a screenshot to addimagesstep.png after PRODUCT TAGS filling ")
 
@@ -1630,7 +1702,7 @@ export async function postTogroups(page,browser){
                                         console.log("Just finished Scrolling  just did a scroll")
 
 
-                                        await page.screenshot({path:"./marketplacelistingimgs/mrktplacescroll.png"})
+                                        await page.screenshot({path:path.join(marketplacelistingimgs,"mrktplacescroll.png" )})
 
 
                                         // console.log("have waited for 30 seconds before taking the screenshot of marketplace scrolling to the bottom mrktplcscrolle")
@@ -1880,7 +1952,7 @@ export async function postTogroups(page,browser){
                                     //     return new Promise(resolve=> setTimeout(resolve,15000))
                                     // })
 
-                                    // await page.screenshot({path:"./userscache/images/afternextscreenshot.png", timeout:30000})
+                                    // await page.screenshot({path:  path.join(posttogroupsimgs, "afternextscreenshot.png" ), timeout:30000})
                                     // //console.log( of after clicking the Next Button);
                                     // console.log("Already Taken screenshot after Clicking Next Button")
 
@@ -2083,7 +2155,7 @@ export async function postTogroups(page,browser){
                                 })
 
 
-                                await page.screenshot({path:"./userscache/images/sharetogroupslist.png", timeout:30000})
+                                await page.screenshot({path:  path.join(posttogroupsimgs, "sharetogroupslist.png" ), timeout:30000})
 
 
                                 //console.log( of after clicking the Next Button);
@@ -2097,7 +2169,7 @@ export async function postTogroups(page,browser){
                                     return new Promise(resolve=> setTimeout(resolve,5000))
                                 })
 
-                                await page.screenshot({path:"./userscache/images/sharetomarketplacescreenshot.png", timeout:30000})
+                                await page.screenshot({path:  path.join(posttogroupsimgs, "sharetomarketplacescreenshot.png" ), timeout:30000})
                                 //console.log( of after clicking the Next Button);
                                 console.log("Already Taken screenshot after Clicking Share to Marketplace Button")
 
@@ -2172,7 +2244,7 @@ export async function postTogroups(page,browser){
 
 
 
-                                //                 await page.screenshot({path:"./userscache/images/clickedonjoinsuggestedgroup.png", timeout:30000})
+                                //                 await page.screenshot({path:  path.join(posttogroupsimgs, "clickedonjoinsuggestedgroup.png" ), timeout:30000})
                                 //                 //console.log( of after clicking the Next Button);
                                 //                 console.log("Already Taken screenshot after Clicking Join Group for Suggsted Groupss")
 
@@ -2255,7 +2327,7 @@ export async function postTogroups(page,browser){
                                                 // await updatedpostbutton.click();
 
 
-                                                console.log(" ABOUT TO CLICK ON the POST BUTTON TO FINISH THIS PROcCES   ")
+                                                console.log(" ABOUT TO CLICK ON the POST BUTTON For MARKETPLACE TO FINISH THIS PROcCES   ")
 
                                                 await postbutton.click();
     
@@ -2292,10 +2364,10 @@ export async function postTogroups(page,browser){
 
                                 //wait for 30 seconds after clicking the Next button before taking screenshot
                                 await page.evaluate(()=>{
-                                    return new Promise(resolve=> setTimeout(resolve,3000))
+                                    return new Promise(resolve=> setTimeout(resolve,5000))
                                 })
 
-                                await page.screenshot({path:"./userscache/images/finishedposting.png", timeout:30000})
+                                await page.screenshot({path:  path.join(posttogroupsimgs, "finishedposting.png" ), timeout:30000})
                                 //console.log( of after clicking the Next Button);
                                 console.log("FINISHED POSTING AND Already Taken screenshot after FINISHED MOVE TO NEXT GROUP")
 
@@ -2385,12 +2457,543 @@ export async function postTogroups(page,browser){
                     console.log('Div with aria-label "Sell Something" not found.');
 
                     console.log("THIS IS EXACTLY WHAT I AM LOOKING FOR NOW ITS TIME TO WRITE SOMTHING HERE")
-                
-                // wait for write something button
-                // await page.waitForSelector('::-p-xpath(//a[.//span[text()="Marketplace"]])',{timeout:90000});
+                    
+                    // wait for write something button
+                    // await page.waitForSelector('  //a[.//span[text()="Marketplace"]]',{timeout:90000});
 
-                // Wait for the link to be available
-                // const marketplace = await page.$('::-p-xpath(//a[.//span[text()="Marketplace"]])');
+                    // Wait for the link to be available
+                    // const marketplace = await page.$('  //a[.//span[text()="Marketplace"]]');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+                    // Define the folder path
+                    const folderPath = process.env.root;
+
+                    // Function to read the details from the folder
+                    const readFolderContents = () => {
+                        // Get list of all files in the folder
+                        const files = fs.readdirSync(folderPath);
+
+                        // Separate the text file and image files
+                        const txtFile = files.find(file => file.endsWith('.txt'));
+                        const imageFiles = files.filter(file => !file.endsWith('.txt'));
+
+                        // const folderImages = files.filter(file => file.endsWith('.jpg'));
+                        const imagepaths=[];
+                        const imagetextpaths=[];
+
+                        console.log("here is the number of products in folder " +  imageFiles.length)
+                        
+                        const randomproduct=Math.floor(Math.random()*imageFiles.length)
+
+                        console.log("here is the Random Product " + randomproduct);
+
+                        const productfolderspaths=path.join(folderPath,imageFiles[randomproduct]);
+
+                        const readproductfolderpaths=fs.readdirSync(productfolderspaths);
+
+
+                        // Separate the text file and image files
+                        const producttxtFile = readproductfolderpaths.find(file => file.endsWith('.txt'));
+                        const productimagesPaths = readproductfolderpaths.filter(file => !file.endsWith('.txt'));
+
+
+
+                        for(const eachimagepath of productimagesPaths){
+                            const absolutimagePath=path.join(productfolderspaths,eachimagepath);
+                            // console.log("Absolute Image Path for each Image File " + absolutimagePath);
+
+                            imagepaths.push(absolutimagePath);
+                        }
+
+
+                        // Read the content of the text file
+                        const txtFilePath = path.join(productfolderspaths,  producttxtFile);
+                        const fileContent = fs.readFileSync(txtFilePath, 'utf8');
+
+                        
+                        // Return both text content and image file paths
+                        return {
+                            producttxtfilepath:txtFilePath,
+                            imagespaths:imagepaths,
+                        };
+                    };
+
+
+
+
+                    // Read  ROOT folder contents
+                    const {producttxtfilepath,imagespaths}=readFolderContents();
+
+
+
+                    // console.log("here is the text Content DETAILS OF  file in ROOT Folder for root  " + rootfoldertxtContent)
+                    // console.log("here is the Images txt file PATHS  " + imagestxtfilepaths);
+                    
+                    // console.log("here is the images files paths in Folder for root " + imagespaths)
+                    console.log(imagespaths);
+
+
+                    const imagestxtfileContent=fs.readFileSync(producttxtfilepath, "utf8");
+                    // console.log("here is the read File for the Images File text Content " + imagestxtfileContent);
+
+
+                    // Parse the txt file content into an object
+                    const data = {};
+
+                    imagestxtfileContent.split('\n').forEach(line => {
+                        const [key, ...value] = line.split(':');
+                        
+                        if (key && value) {
+                            data[key.trim().toLowerCase()] = value.join(':').trim();
+                        }
+                    });
+
+                    console.log(imagestxtfileContent);
+                    
+                    console.log(" \n here is the for data  " + data + "\n")
+                    
+                    
+                    // Replace ellipses (...) with new lines (\n) in the description
+                    const formattedDescription = data.description.replace(/\.\.\./g, '\n');
+
+
+
+                try{
+                    
+                    
+                    
+                    // wait for write something button
+                    // await page.waitForSelector('  //div[role="button"] [.//span[text()="Marketplace"]]',{timeout:90000});
+                    
+                    // await page.waitForSelector('div[role="button"]');
+
+                    await page.evaluate(()=>{
+                        return new Promise(resolve=> setTimeout(resolve,3000))
+                    })
+
+                    console.log("\n Just TOOK A SCREEN SHOT BEFORE LOOOKING FOR Write something....  \n")
+
+                    await page.screenshot({path:   path.join(posttogroupsimgs, "testbeforepost.png" )})
+
+
+
+                    await page.waitForSelector('  //div[@role="button" and .//span[text()="Write something..."]]' , { timeout: 30000, state:'visible' });
+                    
+                    
+                    const postSomethingButton=await page.$('  //div[@role="button" and .//span[text()="Write something..."]]', { timeout: 30000, state:'visible' });
+                    
+                    
+                    console.log("Here is the PostSomethingButton Write Something...  ", "postSomethingButton / writesomething=span");
+
+
+
+                    // Wait for the link to be available
+                    // const marketplace = await page.$('  //a[.//span[text()="Marketplace"]]');
+
+
+                    // Perform an action on the div, for example, click it
+                    // if (postSomethingButton) {
+                    // console.log(postSomethingButton);
+            
+                    await postSomethingButton.click();
+
+                    console.log('Div with Write something "Write Something" clicked.');
+            
+                    // wait for 30 seconds after clicking the Next button before taking screenshot
+                    await page.evaluate(()=>{
+                        return new Promise(resolve=> setTimeout(resolve,3000))
+                    })
+
+            
+                    console.log(" postSomethingButton " ); 
+
+                    await page.screenshot({path:   path.join(posttogroupsimgs, "postfromgroup.png" )})
+
+                    console.log("just clicked on the WRITE SOMETHING BUTTON")
+
+
+
+
+                    // wait for 30 seconds after clicking the Next button before taking screenshot
+                    await page.evaluate(()=>{
+                        return new Promise(resolve=> setTimeout(resolve,3000))
+                    })
+
+            
+
+                    //    const textareas= await page.$$('div[role="textbox"]', {timeout:30000})
+                
+                    async function findCreatepostorWriteSomething(page){
+
+                        try{
+                
+                            console.log("NOW looking for Create a public post... [textbox]")
+                
+                            console.log("Here is the page on console.log( PAGE)  BELOW \n")
+
+                            console.log(page + "\n");
+
+
+                            await page.waitForSelector('div[aria-placeholder="Create a public post…"][role="textbox"]', {timeout:60000,state: 'visible'})
+                            
+                            const createpublicpostextarea=await page.$('div[aria-placeholder="Create a public post…"][role="textbox"]', {timeout:60000})
+            
+                            console.log("just clicked on the CREAT PUBLIC POST All text areas ");
+
+                            console.log("just clicked on the CREAT PUBLIC POST All text areas ");
+
+
+                            console.log("\n\n create public post textareas below ")
+
+                            console.log("Here is the createpublicpostextarea  ");
+
+                            
+                            await page.evaluate(({divtextarea,formattedDescription})=>{
+                                
+                                console.log(" DIVTEXTAREAS  divtexttextarea  ", divtextarea)
+                    
+                                
+
+                                console.log("Here is the DIVTEXTAREA's DETAILS TO USE    ", formattedDescription)
+
+                                if (divtextarea) {
+                                    
+                                    divtextarea.focus();
+
+                                    // document.execCommand("insertText",false,`${formattedDescription}`);
+
+                                    // divtextarea.type(`${formattedDescription}`,{delay:0})
+                                    
+                                    console.log("Just SUCCESSFULLY FILLED THE CREATE PUBLIC POST TEXT AREA i MEAN SUCCESSFULLY FOCUSED ON THE DIV")
+                                }
+                                else{
+            
+                                    console.log("DIVTEXTAREAS NOT FOUND, THROUGH ERROR  ", "divtextarea")
+
+                                }
+                            },{divtextarea:createpublicpostextarea,formattedDescription})
+
+                            // await createpublicpostextarea.fill(formattedDescription);
+                            // await page.keyboard.insertText(formattedDescription);
+
+
+
+                            // await createpublicpostextarea.type(`${formattedDescription}`,{delay:0})
+
+
+                            for (const line of formattedDescription.split("\n")) {
+                                await createpublicpostextarea.type(line,{delay:0}); // Type the line
+                                await page.keyboard.press("Enter"); // Press Enter to create a new line
+                                await page.keyboard.press("Enter"); // Press Enter to create a new line
+
+                            }
+
+
+
+                            await page.evaluate(()=>{
+                                new Promise(resolve=>setTimeout(resolve, 10000))
+                            })
+                            
+                            console.log("just clicked and Typed  on the CREAT PUBLIC POST text Area \n\n");
+
+                        }
+                        catch(error){
+
+
+                            console.log('ERROR FINDING CREATE PUBLIC POST....NOW LOOKING FOR WRITE SOMETHING...', error)
+
+
+
+
+                            console.log("Here is the page on console.log( PAGE)  BELOW \n")
+
+                            console.log(page + "\n");
+
+
+                            if(error.name==="TimeoutError"){
+
+                                console.log("NOW looking for Write something [textbox]")
+
+                                await page.waitForSelector('div[aria-placeholder="Write something..."][role="textbox"]', {timeout:60000,state: 'visible'})
+
+
+                                const createpublicpostextarea=await page.$('div[aria-placeholder="Write something..."][role="textbox"]', {timeout:60000})
+            
+
+
+
+
+                                // await page.waitForSelector('  //div[@aria-label="Write something..." and @role="textbox"]', { timeout: 40000 });
+
+                                // const createpublicpostextarea = await page.$('  //div[@aria-label="Write something..."  and @role="textbox"]', { timeout: 40000 });
+
+                                if (createpublicpostextarea) {
+                                    console.log("Found the createpublicpostextarea  text area using XPath.");
+                                    // await createPublicPostTextarea.click();
+                                }
+
+
+                                console.log("just FOUND the WRITE SOMETHING All text areas  " + createpublicpostextarea.length  );
+
+
+                                console.log("\n\n create WRITE SOMETHING textareas below ")
+
+                                console.log(" createpublicpostextarea ");
+
+                                // await createpublicpostextarea.fill(formattedDescription);
+
+                                
+                                
+                                
+                                
+                                await page.evaluate(({divtextarea,formattedDescription})=>{
+                                    console.log("Here is the DIVTEXTAREA's DETAILS TO USE    ", formattedDescription)
+                                    console.log("DIVTEXTAREAS  divtexttextarea   "," divtextarea")
+                                    
+                                    if (divtextarea) {
+
+                                        divtextarea.focus();
+                                
+                                        // divtextarea.innerText = `${formattedDescription}`;
+
+                                        // divtextarea.type(`${formattedDescription}`,{delay:0});
+
+
+                                        console.log("Just SUCCESSFULLY FILLED THE CREATE PUBLIC POST TEXT AREA i I MEAND SUCCESSUFULL Y FOCUSED ON THE DIV")
+                                
+                                    }else{
+                                        console.log("DIVTEXTAREAS NOT FOUND, THROUGH ERROR  ", divtextarea)
+                                    }
+                                },{divtextarea:createpublicpostextarea,formattedDescription})
+
+                                
+
+
+
+                                // await createpublicpostextarea.fill(formattedDescription);
+                                // await page.keyboard.insertText(formattedDescription);
+
+                                
+                                // createpublicpostextarea.type(`${formattedDescription}`,{delay:0});
+
+
+                                for (const line of formattedDescription.split("\n")) {
+                                    await createpublicpostextarea.type(line,{delay:0}); // Type the line
+                                    await page.keyboard.press("Enter"); // Press Enter to create a new line
+                                    await page.keyboard.press("Enter"); // Press Enter to create a new line
+
+                                }
+
+
+                                // await page.evaluate(()=>{
+                                //     new Promise(resolve=>setTimeout(resolve, 5000))
+                                // })
+                                
+
+                                await page.evaluate(()=>{
+                                    return new Promise(resolve=> setTimeout(resolve,10000))
+                                
+                                })
+
+
+                                console.log("just clicked and Typed  on the Write Something.... text Area \n\n");
+
+                                // continue;
+                            }
+                            else{
+                                console.log("Note a timeoutError" + error);
+                            }
+                        }
+                    }
+                    
+
+                    await findCreatepostorWriteSomething(page)
+                    
+
+                    // console.log(textareas);
+
+                    
+
+
+
+
+
+                    await page.waitForSelector('div[role="button"][aria-label="Photo/video"]', {timeout:90000})
+            
+                    
+                    const publicpostImgButton=await page.$('div[role="button"][aria-label="Photo/video"]', {timeout:90000})
+            
+                    console.log(" publicpostImgButton ", 'div[role="button"][aria-label="Photo/video"]');
+
+                    await publicpostImgButton.click();
+
+                    await page.evaluate(()=>{
+                        return new Promise(resolve=> setTimeout(resolve,5000))
+                    
+                    })
+
+                    console.log("just clicked on the SELECT IMAGE FOR PUBLIC POST ");
+
+                    await page.screenshot({path:   path.join(posttogroupsimgs, "selectimgpublicpost.png" )})
+
+
+                    console.log("just took screenshot for await page.screenshot({path: /userscache/images/selectimgpublicpost.png" )
+
+
+                    await page.waitForSelector('  //div[@role="button" and .//span[text()="Add photos/videos"]]', { timeout: 90000 })
+                    
+                    const addImgsButton=await page.$('  //div[@role="button" and .//span[text()="Add photos/videos"]]', { timeout: 90000 });
+
+
+                    // await addImgsButton.click();
+                    
+                    //wait for 30 seconds after clicking the Next button before taking screenshot
+                    await page.evaluate(()=>{
+                        return new Promise(resolve=> setTimeout(resolve,4000))
+                    })
+
+                    // // Upload a file using Puppeteer
+                    // const [fileChooser] = await Promise.all([
+                    //     // Wait for the file chooser to be triggered                                        
+                    //     page.waitForFileChooser({timeout:60000}),
+                    //     // await button.click(), // Trigger the click to open the file chooser
+                    //     await addImgsButton.click()
+
+                    // ]);
+
+
+                    // <input accept="image/*,image/heif,image/heic,video/*,video/mp4,video/x-m4v,video/x-matroska,.mkv" class="x1s85apg" multiple="" type="file"></input>
+
+                    await page.locator('span:has-text("or drag and drop")').first().waitFor({ timeout: 120000 });
+
+                    // await page.waitForSelector('div[role="button"]', {visible: true});
+
+                    
+                    await page.setInputFiles('input[type="file"][accept="image/*,image/heif,image/heic,video/*,video/mp4,video/x-m4v,video/x-matroska,.mkv"]', imagespaths);
+                    console.log("Just selected the images to upload  and uploaded wait 5 seconds before continue")
+
+                    
+                    // // Wait for a specific timeout (e.g., 5000 milliseconds) before taking a screenshot
+                    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 5000)));
+
+
+
+
+
+
+                        
+        
+                    // Upload multiple files (provide the absolute paths to the images)                                            
+                    // await fileChooser.accept(imagespaths);    
+                    
+
+                    // console.log('Clicked button with text:', button);
+
+                    // console.log('Clicked addImgBtn with text:', addImgBtn);
+                    console.log('Clicked addImgBtn length:', addImgsButton.length);
+
+
+                    // // Wait for a specific timeout (e.g., 5000 milliseconds) before taking a screenshot
+                    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 4000)));
+
+                    await page.screenshot({path:   path.join(posttogroupsimgs, "imageselected.png" )})
+                                            
+                    console.log("took screenshot for ./userscache/images/imageselected.png.png" )
+
+
+
+                    await page.waitForSelector('  //div[@role="button" and @aria-label="Post" and .//span[text()="Post"]]')
+
+                    const postButton=await page.$('  //div[@role="button" and @aria-label="Post" and .//span[text()="Post"]]')
+
+                    console.log("here is the POST BUTTON below  \n"  );
+
+                    console.log("Here is the Post Button " , " postButton");
+
+                    await postButton.click();
+                    
+                    console.log("Just clicked on the POST BUTTON + \n  Now waiting 30 seconds before going to the next group to POST " + postButton);
+
+                    // // Wait for a specific timeout (e.g., 5000 milliseconds) before taking a screenshot
+                    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 15000)));
+
+
+                    console.log("Just took a screenshot({path: ./userscache/images/publicpostclick.png})  \n " + "postButton");
+
+                    // Get the current time
+                    const currentTime = await page.evaluate(() => {
+                        return new Date().toLocaleString();
+                    });
+
+
+                    console.log("\n\n here is the TIME STAMP OF PAGE of JUST FINISHED POSTING PRODUCT  ] " + currentTime)
+                                        
+                    console.log('Current Time:', currentTime + "  \n:");
+
+
+                    await page.screenshot({path:   path.join(posttogroupsimgs, "publicpostclick.png" )})
+
+                    continue;
+
+
+
+
+
+
+                
+                
+                }
+                catch (error) {
+                    // Perform alternative actions here
+                    if (error.name === 'TimeoutError') {
+                        console.log('On Write something... stage area button not found within the timeout period.' + error  );
+                        
+                        await page.evaluate(()=>{
+                            return new Promise(resolve=> setTimeout(resolve,4000))
+                        })
+
+                        console.log("\n Just TOOK A SCREEN shot BEFORE throwing error on write something not found  LOOOKING FOR Write something....  \n")
+
+                        await page.screenshot({path:   path.join(posttogroupsimgs, "testaftererror.png" )})
+
+
+                        
+                        
+                        continue;
+                    }
+                    else {
+                        throw error;
+                    }
+                }
+
+                continue;
+
+
+
+
+
+
+
+
+
+
 
 
                 }
@@ -2403,497 +3006,6 @@ export async function postTogroups(page,browser){
                     console.log('Timout Error Thisis s a timout error I wonder what couldnt be fournd for the Selector.' + `\n\n` + error );
                     // Perform alternative actions here
 
-
-
-
-                        // Define the folder path
-                        const folderPath = process.env.root;
-
-                        // Function to read the details from the folder
-                        const readFolderContents = () => {
-                            // Get list of all files in the folder
-                            const files = fs.readdirSync(folderPath);
-
-                            // Separate the text file and image files
-                            const txtFile = files.find(file => file.endsWith('.txt'));
-                            const imageFiles = files.filter(file => !file.endsWith('.txt'));
-
-                            // const folderImages = files.filter(file => file.endsWith('.jpg'));
-                            const imagepaths=[];
-                            const imagetextpaths=[];
-
-                            console.log("here is the number of products in folder " +  imageFiles.length)
-                            
-                            const randomproduct=Math.floor(Math.random()*imageFiles.length)
-
-                            console.log("here is the Random Product " + randomproduct);
-
-                            const productfolderspaths=path.join(folderPath,imageFiles[randomproduct]);
-
-                            const readproductfolderpaths=fs.readdirSync(productfolderspaths);
-
-
-                            // Separate the text file and image files
-                            const producttxtFile = readproductfolderpaths.find(file => file.endsWith('.txt'));
-                            const productimagesPaths = readproductfolderpaths.filter(file => !file.endsWith('.txt'));
-
-
-
-                            for(const eachimagepath of productimagesPaths){
-                                const absolutimagePath=path.join(productfolderspaths,eachimagepath);
-                                // console.log("Absolute Image Path for each Image File " + absolutimagePath);
-
-                                imagepaths.push(absolutimagePath);
-                            }
-
-
-                            // Read the content of the text file
-                            const txtFilePath = path.join(productfolderspaths,  producttxtFile);
-                            const fileContent = fs.readFileSync(txtFilePath, 'utf8');
-
-                            
-                            // Return both text content and image file paths
-                            return {
-                                producttxtfilepath:txtFilePath,
-                                imagespaths:imagepaths,
-                            };
-                        };
-
-
-
-
-                        // Read  ROOT folder contents
-                        const {producttxtfilepath,imagespaths}=readFolderContents();
-
-
-
-                        // console.log("here is the text Content DETAILS OF  file in ROOT Folder for root  " + rootfoldertxtContent)
-                        // console.log("here is the Images txt file PATHS  " + imagestxtfilepaths);
-                        
-                        // console.log("here is the images files paths in Folder for root " + imagespaths)
-                        console.log(imagespaths);
-
-
-                        const imagestxtfileContent=fs.readFileSync(producttxtfilepath, "utf8");
-                        // console.log("here is the read File for the Images File text Content " + imagestxtfileContent);
-
-
-                        // Parse the txt file content into an object
-                        const data = {};
-
-                        imagestxtfileContent.split('\n').forEach(line => {
-                            const [key, ...value] = line.split(':');
-                            
-                            if (key && value) {
-                                data[key.trim().toLowerCase()] = value.join(':').trim();
-                            }
-                        });
-
-                        console.log(imagestxtfileContent);
-                        
-                        console.log(" \n here is the for data  " + data + "\n")
-                        
-                        
-                        // Replace ellipses (...) with new lines (\n) in the description
-                        const formattedDescription = data.description.replace(/\.\.\./g, '\n');
-
-
-
-                    try{
-                      
-                        
-                        
-                        // wait for write something button
-                        // await page.waitForSelector('::-p-xpath(//div[role="button"] [.//span[text()="Marketplace"]])',{timeout:90000});
-                        
-                        // await page.waitForSelector('div[role="button"]');
-
-                        await page.evaluate(()=>{
-                            return new Promise(resolve=> setTimeout(resolve,3000))
-                        })
-
-                        console.log("\n Just TOOK A SCREEN SHOT BEFORE LOOOKING FOR Write something....  \n")
-
-                        await page.screenshot({path: "./userscache/images/testbeforepost.png"})
-
-
-
-                        await page.waitForSelector('::-p-xpath(//div[@role="button" and .//span[text()="Write something..."]])' , { timeout: 90000 });
-                        
-                        
-                        const postSomethingButton=await page.$('::-p-xpath(//div[@role="button" and .//span[text()="Write something..."]])', { timeout: 90000 });
-                        
-                        
-                        console.log("Here is the PostSomethingButton Write Something...  ", postSomethingButton);
-
-
-
-                        // Wait for the link to be available
-                        // const marketplace = await page.$('::-p-xpath(//a[.//span[text()="Marketplace"]])');
-
-
-                        // Perform an action on the div, for example, click it
-                        // if (postSomethingButton) {
-                        // console.log(postSomethingButton);
-                
-                        await postSomethingButton.click();
-
-                        console.log('Div with Write something "Write Something" clicked.');
-                
-                        // wait for 30 seconds after clicking the Next button before taking screenshot
-                        await page.evaluate(()=>{
-                            return new Promise(resolve=> setTimeout(resolve,3000))
-                        })
-
-                
-                        console.log(" postSomethingButton " ); 
-
-                        await page.screenshot({path: "./userscache/images/postfromgroup.png"})
-
-                        console.log("just clicked on the WRITE SOMETHING BUTTON")
-
-
-
-
-                        // wait for 30 seconds after clicking the Next button before taking screenshot
-                        await page.evaluate(()=>{
-                            return new Promise(resolve=> setTimeout(resolve,3000))
-                        })
-
-                
-
-                        //    const textareas= await page.$$('div[role="textbox"]', {timeout:30000})
-                    
-                        async function findCreatepostorWriteSomething(page){
-
-                            try{
-                   
-                                console.log("NOW looking for Create a public post... [textbox]")
-                   
-                                console.log("Here is the page on console.log( PAGE)  BELOW \n")
-
-                                console.log(page + "\n");
-
-
-                                await page.waitForSelector('div[aria-label="Create a public post…"][role="textbox"]', {timeout:30000})
-                                
-                                const createpublicpostextarea=await page.$('div[aria-label="Create a public post…"][role="textbox"]', {timeout:30000})
-                
-                                console.log("just clicked on the CREAT PUBLIC POST All text areas ");
-    
-                                console.log("just clicked on the CREAT PUBLIC POST All text areas ");
-
-
-                                console.log("\n\n create public post textareas below ")
-
-                                console.log(createpublicpostextarea);
-
-                                
-                                await page.evaluate((divtextarea,formattedDescription)=>{
-                                    
-                                    console.log(" DIVTEXTAREAS  divtexttextarea  ", divtextarea)
-                        
-                                    
-
-                                    console.log("Here is the DIVTEXTAREA's DETAILS TO USE    ", formattedDescription)
-
-                                    if (divtextarea) {
-                                        
-                                        divtextarea.focus();
-
-                                        // document.execCommand("insertText",false,`${formattedDescription}`);
-
-                                        // divtextarea.type(`${formattedDescription}`,{delay:0})
-                                        
-                                        console.log("Just SUCCESSFULLY FILLED THE CREATE PUBLIC POST TEXT AREA i MEAN SUCCESSFULLY FOCUSED ON THE DIV")
-                                    }
-                                    else{
-              
-                                      console.log("DIVTEXTAREAS NOT FOUND, THROUGH ERROR  ", divtextarea)
-
-                                    }
-                                },createpublicpostextarea,formattedDescription)
-
-                                // await createpublicpostextarea.fill(formattedDescription);
-                                // await page.keyboard.insertText(formattedDescription);
-
-
-
-                                // await createpublicpostextarea.type(`${formattedDescription}`,{delay:0})
-
-
-                                for (const line of formattedDescription.split("\n")) {
-                                    await createpublicpostextarea.type(line,{delay:0}); // Type the line
-                                    await page.keyboard.press("Enter"); // Press Enter to create a new line
-                                    await page.keyboard.press("Enter"); // Press Enter to create a new line
-
-                                }
-
-
-
-                                await page.evaluate(()=>{
-                                    new Promise(resolve=>setTimeout(resolve, 10000))
-                                })
-                                
-                                console.log("just clicked and Typed  on the CREAT PUBLIC POST text Area \n\n");
-
-                            }
-                            catch(error){
-
-
-                                console.log('ERROR FINDING CREATE PUBLIC POST....NOW LOOKING FOR WRITE SOMETHING...', error)
-
-
-
-
-                                console.log("Here is the page on console.log( PAGE)  BELOW \n")
-
-                                console.log(page + "\n");
-
-
-                                if(error.name==="TimeoutError"){
-
-                                    console.log("NOW looking for Write something [textbox]")
-
-                                    await page.waitForSelector('div[aria-label="Write something..."][role="textbox"]', {timeout:40000})
-
-
-                                    const createpublicpostextarea=await page.$('div[aria-label="Write something..."][role="textbox"]', {timeout:40000})
-                
-
-
-
-
-                                    // await page.waitForSelector('::-p-xpath(//div[@aria-label="Write something..." and @role="textbox"])', { timeout: 40000 });
-
-                                    // const createpublicpostextarea = await page.$('::-p-xpath(//div[@aria-label="Write something..."  and @role="textbox"])', { timeout: 40000 });
-
-                                    if (createpublicpostextarea) {
-                                        console.log("Found the createpublicpostextarea  text area using XPath.");
-                                        // await createPublicPostTextarea.click();
-                                    }
-
-
-                                    console.log("just FOUND the WRITE SOMETHING All text areas  " + createpublicpostextarea.length  );
-
-
-                                    console.log("\n\n create WRITE SOMETHING textareas below ")
-
-                                    console.log(createpublicpostextarea);
-
-                                    // await createpublicpostextarea.fill(formattedDescription);
-
-                                    
-                                    
-                                    
-                                    
-                                    await page.evaluate((divtextarea,formattedDescription)=>{
-                                            console.log("Here is the DIVTEXTAREA's DETAILS TO USE    ", formattedDescription)
-                                        console.log("DIVTEXTAREAS  divtexttextarea   ", divtextarea)
-                                       
-                                        if (divtextarea) {
-
-                                            divtextarea.focus();
-                                    
-                                            // divtextarea.innerText = `${formattedDescription}`;
-
-                                            // divtextarea.type(`${formattedDescription}`,{delay:0});
-
-
-                                            console.log("Just SUCCESSFULLY FILLED THE CREATE PUBLIC POST TEXT AREA i I MEAND SUCCESSUFULL Y FOCUSED ON THE DIV")
-                                    
-                                        }else{
-                                            console.log("DIVTEXTAREAS NOT FOUND, THROUGH ERROR  ", divtextarea)
-                                        }
-                                    },createpublicpostextarea,formattedDescription)
-
-                                    
-
-
-
-                                    // await createpublicpostextarea.fill(formattedDescription);
-                                    // await page.keyboard.insertText(formattedDescription);
-
-                                    
-                                    // createpublicpostextarea.type(`${formattedDescription}`,{delay:0});
-
-
-                                    for (const line of formattedDescription.split("\n")) {
-                                        await createpublicpostextarea.type(line,{delay:0}); // Type the line
-                                        await page.keyboard.press("Enter"); // Press Enter to create a new line
-                                        await page.keyboard.press("Enter"); // Press Enter to create a new line
-    
-                                    }
-
-
-                                    // await page.evaluate(()=>{
-                                    //     new Promise(resolve=>setTimeout(resolve, 5000))
-                                    // })
-                                    
-
-                                    await page.evaluate(()=>{
-                                        return new Promise(resolve=> setTimeout(resolve,10000))
-                                    
-                                    })
-
-
-                                    console.log("just clicked and Typed  on the Write Something.... text Area \n\n");
-
-                                    // continue;
-                                }
-                                else{
-                                    console.log("Note a timeoutError" + error);
-                                }
-                            }
-                        }
-                        
-
-                        await findCreatepostorWriteSomething(page)
-                        
-
-                        // console.log(textareas);
-
-                        
-
-
-
-
-
-                        await page.waitForSelector('div[role="button"][aria-label="Photo/video"]', {timeout:90000})
-                
-                        
-                        const publicpostImgButton=await page.$('div[role="button"][aria-label="Photo/video"]', {timeout:90000})
-                
-                        console.log(publicpostImgButton);
-
-                        await publicpostImgButton.click();
-
-                        await page.evaluate(()=>{
-                            return new Promise(resolve=> setTimeout(resolve,5000))
-                        
-                        })
-
-                        console.log("just clicked on the SELECT IMAGE FOR PUBLIC POST ");
-
-                        await page.screenshot({path: "./userscache/images/selectimgpublicpost.png"})
-
-
-                        console.log("just took screenshot for await page.screenshot({path: /userscache/images/selectimgpublicpost.png")
-
-
-                        await page.waitForSelector('::-p-xpath(//div[@role="button" and .//span[text()="Add photos/videos"]])', { timeout: 90000 })
-                        
-                        const addImgsButton=await page.$('::-p-xpath(//div[@role="button" and .//span[text()="Add photos/videos"]])', { timeout: 90000 });
-
-
-                        // await addImgsButton.click();
-                        
-
-
-
-                        //wait for 30 seconds after clicking the Next button before taking screenshot
-                        await page.evaluate(()=>{
-                            return new Promise(resolve=> setTimeout(resolve,4000))
-                        })
-
-
-                        // Upload a file using Puppeteer
-                        const [fileChooser] = await Promise.all([
-                            
-                            // Wait for the file chooser to be triggered                                        
-                            page.waitForFileChooser({timeout:60000}),
-
-                            // await button.click(), // Trigger the click to open the file chooser
-
-                            await addImgsButton.click()
-
-                        ]);
-                            
-            
-                        // Upload multiple files (provide the absolute paths to the images)                                            
-                        await fileChooser.accept(imagespaths);    
-                        
-
-                        // console.log('Clicked button with text:', button);
-
-                        // console.log('Clicked addImgBtn with text:', addImgBtn);
-                        console.log('Clicked addImgBtn length:', addImgsButton.length);
-
-
-                        // // Wait for a specific timeout (e.g., 5000 milliseconds) before taking a screenshot
-                        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 4000)));
-
-                        await page.screenshot({path: "./userscache/images/imageselected.png"})
-                                                
-                        console.log("took screenshot for ./userscache/images/imageselected.png.png")
-
-
-
-                        await page.waitForSelector('::-p-xpath(//div[@role="button" and @aria-label="Post" and .//span[text()="Post"]])')
-
-                        const postButton=await page.$('::-p-xpath(//div[@role="button" and @aria-label="Post" and .//span[text()="Post"]])')
-
-                        console.log("here is the POST BUTTON below  \n"  );
-
-                        console.log(postButton);
-
-                        await postButton.click();
-                       
-                        console.log("Just clicked on the POST BUTTON + \n  Now waiting 30 seconds before going to the next group to POST " + postButton);
-
-                        // // Wait for a specific timeout (e.g., 5000 milliseconds) before taking a screenshot
-                        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 15000)));
-
-
-                        console.log("Just took a screenshot({path: ./userscache/images/publicpostclick.png})  \n " + postButton);
-
-                        // Get the current time
-                        const currentTime = await page.evaluate(() => {
-                            return new Date().toLocaleString();
-                        });
-
-
-                        console.log("\n\n here is the TIME STAMP OF PAGE of JUST FINISHED POSTING PRODUCT  ] " + currentTime)
-                                            
-                        console.log('Current Time:', currentTime + "  \n:");
-
-
-                        await page.screenshot({path: "./userscache/images/publicpostclick.png"})
-
-                        continue;
-
-
-
-
-
-
-                    
-                    
-                    }
-                    catch (error) {
-                        // Perform alternative actions here
-                        if (error.name === 'TimeoutError') {
-                            console.log('On Write something... stage area button not found within the timeout period.' + error  );
-                            
-                            await page.evaluate(()=>{
-                                return new Promise(resolve=> setTimeout(resolve,4000))
-                            })
-    
-                            console.log("\n Just TOOK A SCREEN shot BEFORE throwing error on write something not found  LOOOKING FOR Write something....  \n")
-    
-                            await page.screenshot({path: "./userscache/images/testaftererror.png"})
-    
-    
-                            
-                            
-                            continue;
-                        }
-                        else {
-                            throw error;
-                        }
-                    }
-
-                    continue;
                 }
                 else{
                     console.log("No post text are found ");
@@ -2934,4 +3046,9 @@ export async function postTogroups(page,browser){
     }
 
 
+}
+
+
+module.exports={
+    postTogroups
 }
